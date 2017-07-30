@@ -1,0 +1,52 @@
+{
+  "name": "whitelodge",
+  "version": "1.0.0",
+  "description": "TODO",
+  "main": "./dist/index.js",
+  "config": {
+    "echoGreen": "\\033[30;48;5;82m",
+    "echoColourReset": "\\033[0m"
+  },
+  "scripts": {
+    "test": "bash ./__tests__/run-tests.sh",
+    "lint": "standard --verbose | snazzy && echo \"$npm_package_config_echoGreen ✔ All good! $npm_package_config_echoColourReset\"",
+    "lintFix": "standard --fix && echo -e \"$npm_package_config_echoGreen ✔ Done! $npm_package_config_echoColourReset\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liegeandlief/whitelodge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liegeandlief/whitelodge/issues"
+  },
+  "keywords": [
+    "whitelodge",
+    "state",
+    "state management",
+    "subscribe",
+    "predictable",
+    "state container",
+    "model",
+    "reactjs",
+    "react",
+    "react-component",
+    "reactive",
+    "redux",
+    "mobx"
+  ],
+  "author": "Michael Henon <TODO - insert email> (https://github.com/liegeandlief)",
+  "license": "MIT",
+  "dependencies": {
+    "isobject": "^3.0.1"
+  },
+  "devDependencies": {
+    "enzyme": "^2.9.1",
+    "jest": "^20.0.4",
+    "snazzy": "^7.0.0",
+    "standard": "*"
+  },
+  "peerDependencies": {
+    "react": ">=0.13.0",
+    "prop-types": ">=15.5.7"
+  }
+}

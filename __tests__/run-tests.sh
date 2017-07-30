@@ -1,0 +1,36 @@
+#!/bin/bash
+
+runCommandWithTeardown () {
+  eval $1; commandResult=$?
+  if [ $commandResult -ne 0 ]
+  then
+    eval $2
+    exit 3
+  fi
+}
+
+greenEcho () {
+  echo -e "\033[30;48;5;82m $1 \033[0m"
+}
+
+installingEcho="greenEcho \"Installing packages required for tests\""
+runningTestsEcho="greenEcho \"Running tests\""
+uninstallingEcho="greenEcho \"Uninstalling packages required for tests\""
+
+# Run tests using lowest versions of peer dependencies
+teardownCommand="$uninstallingEcho && npm uninstall react prop-types TODO-add react-addons-test-utils version which works with this react version"
+eval $installingEcho
+runCommandWithTeardown "npm install react@\"0.13.0\" prop-types@\"15.5.7\" TODO-add react-addons-test-utils version which works with this react version --no-save" "$teardownCommand"
+eval $runningTestsEcho
+runCommandWithTeardown "jest" "$teardownCommand"
+eval $teardownCommand
+
+# Run tests using latest versions of peer dependencies
+teardownCommand="$uninstallingEcho && npm uninstall react prop-types"
+eval $installingEcho
+runCommandWithTeardown "npm install react prop-types --no-save" "$teardownCommand"
+eval $runningTestsEcho
+runCommandWithTeardown "jest" "$teardownCommand"
+eval $teardownCommand
+
+greenEcho "✔ All tests passed!"
