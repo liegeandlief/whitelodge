@@ -1,5 +1,5 @@
 # whitelodge
----
+
 [![npm version](https://badge.fury.io/js/whitelodge.svg)](https://badge.fury.io/js/whitelodge) [![Build Status](https://travis-ci.org/liegeandlief/whitelodge.svg?branch=master)](https://travis-ci.org/liegeandlief/whitelodge) [![Known Vulnerabilities](https://snyk.io/test/github/liegeandlief/whitelodge/badge.svg)](https://snyk.io/test/github/liegeandlief/whitelodge)
 
 ## Things to do prior to 1.0.0 release
