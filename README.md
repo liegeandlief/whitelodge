@@ -4,7 +4,7 @@
 
 ## Things to do prior to 1.0.0 release
 
- - Add a CHANGELOG.md detailing features added in 1.0.0
+ - Add a CHANGELOG.md detailing features added in initial release 1.0.0
  - Add GitHub description and labels
  - Add email address and description in package.json
  - Write this README.md file
