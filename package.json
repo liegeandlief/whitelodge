@@ -1,6 +1,6 @@
 {
   "name": "whitelodge",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "TODO",
   "main": "./dist/index.js",
   "config": {
@@ -10,7 +10,9 @@
   "scripts": {
     "test": "bash ./__tests__/run-tests.sh",
     "lint": "standard --verbose | snazzy && echo \"$npm_package_config_echoGreen ✔ All good! $npm_package_config_echoColourReset\"",
-    "lintFix": "standard --fix && echo -e \"$npm_package_config_echoGreen ✔ Done! $npm_package_config_echoColourReset\""
+    "lintFix": "standard --fix && echo -e \"$npm_package_config_echoGreen ✔ Done! $npm_package_config_echoColourReset\"",
+    "build": "babel src --out-dir dist",
+    "maybePublish": "bash ./maybe-publish.sh"
   },
   "repository": {
     "type": "git",
@@ -37,16 +39,24 @@
   "author": "Michael Henon <TODO - insert email> (https://github.com/liegeandlief)",
   "license": "MIT",
   "dependencies": {
-    "isobject": "^3.0.1"
+    "clone": "^2.1.1",
+    "is-function": "^1.0.1",
+    "isobject": "^3.0.1",
+    "window-or-global": "^1.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "enzyme": "^2.9.1",
     "jest": "^20.0.4",
     "snazzy": "^7.0.0",
-    "standard": "*"
+    "standard": "^10.0.2"
   },
   "peerDependencies": {
-    "react": ">=0.13.0",
-    "prop-types": ">=15.5.7"
+    "react": ">=0.13.0"
+  },
+  "jest": {
+    "testRegex": "(/__tests__/tests/.*|(\\.|/)(test|spec))\\.jsx?$"
   }
 }
