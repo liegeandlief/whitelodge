@@ -1,7 +1,7 @@
 {
   "name": "whitelodge",
-  "version": "0.0.1",
-  "description": "TODO",
+  "version": "1.0.0",
+  "description": "whitelodge is a small library which makes managing state in React applications easy. It takes cues from other libraries such as Redux and MobX but endeavours to be simpler to understand and to use.",
   "main": "./dist/index.js",
   "config": {
     "echoGreen": "\\033[30;48;5;82m",
@@ -36,7 +36,10 @@
     "redux",
     "mobx"
   ],
-  "author": "Michael Henon <TODO - insert email> (https://github.com/liegeandlief)",
+  "author": {
+    "name" : "Michael Henson",
+    "url" : "https://github.com/liegeandlief"
+  },
   "license": "MIT",
   "dependencies": {
     "clone": "^2.1.1",

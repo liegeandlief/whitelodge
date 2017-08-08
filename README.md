@@ -2,21 +2,148 @@
 
 [![npm version](https://badge.fury.io/js/whitelodge.svg)](https://badge.fury.io/js/whitelodge) [![Build Status](https://travis-ci.org/liegeandlief/whitelodge.svg?branch=master)](https://travis-ci.org/liegeandlief/whitelodge) [![Known Vulnerabilities](https://snyk.io/test/github/liegeandlief/whitelodge/badge.svg)](https://snyk.io/test/github/liegeandlief/whitelodge)
 
-## Things to do prior to 1.0.0 release
+**whitelodge** is a small library which makes managing state in React applications easy. It takes cues from other libraries such as Redux and MobX but endeavours to be simpler to understand and to use.
 
- - Add a CHANGELOG.md detailing features added in initial release 1.0.0
- - Add GitHub description and labels
- - Add email address and description in package.json
- - Write this README.md file
- - Direct questions to GitHub issues
- - Things to do in future - make it work for more than just React apps, immutable store state, server rendering
- - Review code
+## What does whitelodge do?
 
-## Things to put in this file
+whitelodge does the following and nothing more:
 
- - What whitelodge is - simply allows for stores of state available to all React components, it allows mutation of that state by calling methods on the stores and it allows components to subscribe to changes on particular stores to trigger a re-render
- - Why I made it
- - How to install it including peer dependencies required
- - How to use it - what is a store and how to use them including initial state, console logging of state, number of previous states to keep, making stores available for subscription throughout a React app, subscribing components to stores, reading store state in a component, mutating store state from a component
- - Allows normal use of React lifecycle methods - how to compare previous store stage and current store state
- - Make clear reserved property and method names on stores
+- Allows for the creation of stores (e.g. in a shopping application there might be a store for the inventory). These stores contain the current state (e.g. details of the current inventory items), previous states and methods for mutating the current state (e.g. a method for adding an item which sends the item details to a server and updates the current state with the new item's details).
+- Allows these stores to be made available globally so that all components in a React application can access them. A component can then subscribe to particular stores and will receive references to these stores in its props. Whenever the state is updated in one of these subscribed stores then an update will be triggered on the component.
+
+## How do I install whitelodge?
+
+- Your application should have a dependency of React >=0.13.0.
+- Then run `npm install whitelodge`
+
+## How do I use whitelodge?
+
+### Creating a store
+
+Stores are just classes which extend whitelodge's `Store` class. The constructor of a store should call `super` passing it the following arguments:
+
+- The store's name (required). This should be a string and is the key by which the store will referenced from other parts of the application. All stores which are made globally available in an application should have different names.
+- The store's initial state (optional, defaults to `{}`). This should be an object.
+- Whether or not to log changes to this store's state to the console (optional, defaults to `false`). This should be a boolean.
+- The number of previous states to keep in the store's `previousStates` property (optional, defaults to 10). This should be an integer greater than zero.
+
+The store should then contain methods for mutating its state. Mutation methods should update the store's state by calling `this.setStoreState` and passing it the new state object. This new state object is copied into the existing state using `Object.assign`. Once the store's state has been updated then its most recent previous state is available under the store's `previousStates` property as the first object in the array.
+
+The store can also contain methods which do not mutate the state but do something with its current value and return the result of this operation (see the `sumAllItemsTotalQuantities` method in the class below).
+
+A simple store for an inventory of items might look as follows:
+
+```javascript
+'use strict'
+
+import {Store} from 'whitelodge'
+
+export default class Inventory extends Store {
+  constructor () {
+    super('inventory', {items: [{description:'Cherry pies', quantity: 11)}]}, true, 20)
+  }
+
+  addItem (description, quantity) {
+    // Arguments would normally be validated here
+    anHTTPClient.post('/addItem', {
+      description: description,
+      quantity: quantity
+    })
+    .then(response => {
+      this.setStoreState({
+        // It is important to avoid directly changing this.state hence the use of concat instead of push
+        items: this.state.items.concat([{
+          itemID: response.data.id,
+          description: description,
+          quantity: quantity          
+        }])
+      })
+    })
+    .catch(error => {
+      // Errors would normally be handled here
+    })
+  }
+
+  sumAllItemsTotalQuantities () {
+    return this.state.items.reduce((total, item) => {
+      return total + item.quantity
+    }, 0)
+  }
+}
+```
+
+As mentioned in the above example it is important to avoid directly changing a store's state. Store state should only be changed using the `this.setStoreState` method because this will cause subscribed components to update.
+
+whitelodge's `Store` class defines the following properties so do not define properties or methods with the following names on classes which extend `Store`:
+
+- name
+- initialState
+- previousStates
+- subscribers
+- logStateToConsole
+- numberOfPreviousStatesToKeep
+- validateArguments
+- doLogStateToConsole
+- addCurrentStateToPreviousStates
+- setStoreState
+- subscribe
+- unsubscribe
+
+## Making stores globally available
+
+In order for components to be able to subscribe to stores the stores need to be made globally available. This should be done in the constructor (or in `componentWillMount` if using `React.createClass` or `createReactClass`) of the application's top-level component by calling `makeStoresGloballyAvailable` and passing it instances of the stores. See the following example:
+
+```javascript
+'use strict'
+
+import React from 'react'
+import {makeStoresGloballyAvailable} from 'whitelodge'
+import Inventory from './stores/Inventory'
+import AnotherStore from './stores/AnotherStore'
+
+export default class App extends React.Component {
+  constructor () {
+    makeStoresGloballyAvailable(new Inventory(), new AnotherStore())
+  }
+
+  render () {
+    return (
+      <div>...</div>
+    )
+  }
+}
+```
+
+### Subscribing to stores
+
+Components can access stores by subscribing to them as follows:
+
+```javascript
+'use strict'
+
+import React from 'react'
+import {AddStoreSubscriptions} from 'whitelodge'
+
+class InventoryList extends React.Component {
+  render () {
+    return (
+      <ul>...</ul>
+    )
+  }
+}
+
+export default AddStoreSubscriptions(InventoryList, ['inventory', 'anotherStore'])
+```
+
+This component will be able to access these stores using `this.props.inventory` and `this.props.anotherStore`. State can be read from the `state` property e.g. `this.props.inventory.state` but should not be directly changed.
+
+The most recent previous state of a store can be read from the first item in the `previousStates` array e.g. `this.props.inventory.previousStates[0]`. This can be used to compare the current and previous states of the store in the component's lifecycle methods. Older versions of the state are also available in the array depending on how many previous states the store is configured to keep.
+
+Store methods can be called from props too e.g. `this.props.inventory.addItem('Damn good coffees', 2)`.
+
+## Things to do in future
+
+- Add a CHANGELOG.md file.
+- Make whitelodge work in all JavaScript applications, not just React applications.
+- Allow for server-side rendering.
+- Enforce store state immutability.

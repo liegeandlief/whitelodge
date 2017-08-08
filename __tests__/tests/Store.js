@@ -30,7 +30,7 @@ test('Has the expected properties when no arguments except "name" are passed.', 
   expect(testStore).toHaveProperty('previousStates', [{}])
   expect(testStore).toHaveProperty('subscribers', [])
   expect(testStore).toHaveProperty('logStateToConsole', false)
-  expect(testStore).toHaveProperty('numberOfPreviousStatesToKeep', 15)
+  expect(testStore).toHaveProperty('numberOfPreviousStatesToKeep', 10)
 })
 
 test('Has the expected properties when all arguments are passed.', () => {
