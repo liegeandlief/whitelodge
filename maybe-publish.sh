@@ -17,11 +17,7 @@ if [[ $newVersionLength -gt 0 && $newVersionFirstChar != "0" ]]; then
   if [[ $CI == true && $TRAVIS == true && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == false && $newVersion != $currentVersion ]]
   then
     greenEcho "Publishing to NPM"
-    npm login <<!
-    $NPM_USERNAME
-    $NPM_PASSWORD
-    $NPM_EMAIL
-    !
+    npm adduser
     npm publish
   fi
 fi
