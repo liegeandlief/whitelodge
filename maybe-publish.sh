@@ -10,7 +10,7 @@ newVersionFirstChar=$(printf "%s" "$newVersion" | cut -c1-1)
 
 if [[ $newVersionLength -gt 0 && $newVersionFirstChar != "0" ]]; then
   if [[ $newVersion == "1.0.0" ]]; then
-    currentVersion = "no_current_version"
+    currentVersion="no_current_version"
   else
     currentVersion=$(npm show whitelodge version)
   fi
