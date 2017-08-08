@@ -19,7 +19,7 @@ const validateNewState = newState => {
 }
 
 export class Store {
-  constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 15) {
+  constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 10) {
     const parsedNumberOfPreviousStatesToKeep = Number(numberOfPreviousStatesToKeep)
     this.validateArguments(name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep)
     this.name = name
