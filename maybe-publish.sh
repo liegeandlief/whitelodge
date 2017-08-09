@@ -17,7 +17,7 @@ if [[ $newVersionLength -gt 0 && $newVersionFirstChar != "0" ]]; then
   if [[ $CI == true && $TRAVIS == true && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == false && $newVersion != $currentVersion ]]
   then
     greenEcho "Publishing to NPM"
-    npm adduser
+    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
     npm publish
   fi
 fi
