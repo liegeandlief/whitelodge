@@ -12,7 +12,7 @@
     "lint": "standard --verbose | snazzy && echo \"$npm_package_config_echoGreen ✔ All good! $npm_package_config_echoColourReset\"",
     "lintFix": "standard --fix && echo -e \"$npm_package_config_echoGreen ✔ Done! $npm_package_config_echoColourReset\"",
     "build": "babel src --out-dir dist",
-    "maybePublish": "bash ./npm-adduser.sh && bash ./maybe-publish.sh"
+    "maybePublish": "bash ./maybe-publish.sh"
   },
   "repository": {
     "type": "git",
