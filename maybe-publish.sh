@@ -18,6 +18,7 @@ if [[ $newVersionLength -gt 0 && $newVersionFirstChar != "0" ]]; then
   then
     greenEcho "Publishing to NPM"
     echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+    cat ~/.npmrc
     npm publish
   fi
 fi
