@@ -2,9 +2,9 @@
 
 import isObject from 'isobject'
 import isFunction from 'is-function'
-import clone from 'clone'
 import React from 'react'
 import root from 'window-or-global'
+import Immutable from 'seamless-immutable'
 
 const rootObjectName = 'whitelodge'
 const logPrefix = 'whitelodge | '
@@ -43,7 +43,7 @@ export class Store {
   }
 
   addCurrentStateToPreviousStates () {
-    this.previousStates.unshift(clone(this.state))
+    this.previousStates.unshift(this.state)
     if (this.previousStates.length > this.numberOfPreviousStatesToKeep) {
       this.previousStates = this.previousStates.slice(0, this.numberOfPreviousStatesToKeep)
     }
@@ -52,7 +52,7 @@ export class Store {
   setStoreState (newState) {
     validateNewState(newState)
     this.addCurrentStateToPreviousStates()
-    Object.assign(this.state, newState)
+    this.state = Immutable.merge(this.state, newState)
     this.subscribers.forEach(subscriber => {
       subscriber.setState({[this.name]: this})
     })
