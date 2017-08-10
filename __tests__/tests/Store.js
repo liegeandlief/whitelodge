@@ -97,6 +97,23 @@ test('Setting state works and keeps the correct number of previous states.', () 
   testStore.setStoreState({c: 2})
   expect(testStore).toHaveProperty('state', {a: 2, b: 2, c: 2})
   expect(testStore).toHaveProperty('previousStates', [{a: 2, b: 2, c: 1}, {a: 2, b: 2}, {a: 2, b: 1}])
+  testStore.setStoreState({c: {d: 1}})
+  expect(testStore).toHaveProperty('state', {a: 2, b: 2, c: {d: 1}})
+  expect(testStore).toHaveProperty('previousStates', [{a: 2, b: 2, c: 2}, {a: 2, b: 2, c: 1}, {a: 2, b: 2}])
+  testStore.setStoreState({c: {d: {e: 1}}})
+  expect(testStore).toHaveProperty('state', {a: 2, b: 2, c: {d: {e: 1}}})
+  expect(testStore).toHaveProperty('previousStates', [{a: 2, b: 2, c: {d: 1}}, {a: 2, b: 2, c: 2}, {a: 2, b: 2, c: 1}])
+})
+
+test('Trying to directly alter state throws an error.', () => {
+  const testStore = new Store('testStore', {a: 1, b: 1})
+  expect(() => { testStore.state.a = 2 }).toThrow()
+})
+
+test('Trying to directly alter previous states throws an error.', () => {
+  const testStore = new Store('testStore', {a: 1, b: 1})
+  testStore.setStoreState({a: 2})
+  expect(() => { testStore.previousStates[0].a = 3 }).toThrow()
 })
 
 test('Subscribing to store works.', () => {

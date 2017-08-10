@@ -37,14 +37,14 @@
     "mobx"
   ],
   "author": {
-    "name" : "Michael Henson",
-    "url" : "https://github.com/liegeandlief"
+    "name": "Michael Henson",
+    "url": "https://github.com/liegeandlief"
   },
   "license": "MIT",
   "dependencies": {
-    "clone": "^2.1.1",
     "is-function": "^1.0.1",
     "isobject": "^3.0.1",
+    "seamless-immutable": "^7.1.2",
     "window-or-global": "^1.0.1"
   },
   "devDependencies": {

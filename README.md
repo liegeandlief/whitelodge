@@ -51,6 +51,7 @@ export default class Inventory extends Store {
     })
     .then(response => {
       this.setStoreState({
+        ***
         // It is important to avoid directly changing this.state hence the use of concat instead of push
         items: this.state.items.concat([{
           itemID: response.data.id,
@@ -63,7 +64,7 @@ export default class Inventory extends Store {
       // Errors would normally be handled here
     })
   }
-
+***
   sumAllItemsTotalQuantities () {
     return this.state.items.reduce((total, item) => {
       return total + item.quantity
@@ -72,7 +73,7 @@ export default class Inventory extends Store {
 }
 ```
 
-As mentioned in the above example it is important to avoid directly changing a store's state. Store state should only be changed using the `this.setStoreState` method because this will cause subscribed components to update.
+*** As mentioned in the above example it is important to avoid directly changing a store's state. Store state should only be changed using the `this.setStoreState` method because this will cause subscribed components to update.
 
 whitelodge's `Store` class defines the following properties so do not define properties or methods with the following names on classes which extend `Store`:
 
@@ -135,7 +136,7 @@ class InventoryList extends React.Component {
 export default AddStoreSubscriptions(InventoryList, ['inventory', 'anotherStore'])
 ```
 
-This component will be able to access these stores using `this.props.inventory` and `this.props.anotherStore`. State can be read from the `state` property e.g. `this.props.inventory.state` but should not be directly changed.
+This component will be able to access these stores using `this.props.inventory` and `this.props.anotherStore`. State can be read from the `state` property e.g. `this.props.inventory.state` but should not be directly changed***.
 
 The most recent previous state of a store can be read from the first item in the `previousStates` array e.g. `this.props.inventory.previousStates[0]`. This can be used to compare the current and previous states of the store in the component's lifecycle methods. Older versions of the state are also available in the array depending on how many previous states the store is configured to keep.
 
@@ -146,4 +147,3 @@ Store methods can be called from props too e.g. `this.props.inventory.addItem('D
 - Add a CHANGELOG.md file.
 - Make whitelodge work in all JavaScript applications, not just React applications.
 - Allow for server-side rendering.
-- Enforce store state immutability.
