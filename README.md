@@ -91,27 +91,20 @@ whitelodge's `Store` class defines the following properties so do not define pro
 
 ## Making stores globally available
 
-In order for components to be able to subscribe to stores the stores need to be made globally available. This should be done in the constructor (or in `componentWillMount` if using `React.createClass` or `createReactClass`) of the application's top-level component by calling `makeStoresGloballyAvailable` and passing it instances of the stores. See the following example:
+In order for components to be able to subscribe to stores the stores need to be made globally available. This should be done prior to calling `render` on the application's top-level component by calling `makeStoresGloballyAvailable` and passing it instances of the stores. See the following example:
 
 ```javascript
 'use strict'
 
-import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './components/App'
 import {makeStoresGloballyAvailable} from 'whitelodge'
 import Inventory from './stores/Inventory'
 import AnotherStore from './stores/AnotherStore'
 
-export default class App extends React.Component {
-  constructor () {
-    makeStoresGloballyAvailable(new Inventory(), new AnotherStore())
-  }
+makeStoresGloballyAvailable(new Inventory(), new AnotherStore())
 
-  render () {
-    return (
-      <div>...</div>
-    )
-  }
-}
+ReactDOM.render(<App />, document.getElementById('root'))
 ```
 
 ### Subscribing to stores
