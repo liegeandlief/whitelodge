@@ -23,7 +23,7 @@ export class Store {
     const parsedNumberOfPreviousStatesToKeep = Number(numberOfPreviousStatesToKeep)
     this.validateArguments(name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep)
     this.name = name
-    this.state = Immutable({})
+    this.state = {}
     this.previousStates = []
     this.subscribers = []
     this.logStateToConsole = logStateToConsole
