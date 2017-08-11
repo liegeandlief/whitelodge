@@ -1,22 +1,31 @@
 language: node_js
+notifications:
+  email:
+    recipients:
+      secure: DQxzim6ik5Y03TSZPK+MFg9kdX5AcxV6v61fvOu61JnD+Yo+2aUR236bfClqXgobfGCN8pv2YYGNQChx/eiNOyM5QxmTEHyx/nbjKZnr6PQTzAQXFyZZ/s6vsWJ3REBUFIYVKzyaHg8qJBm/4qiClrQFCoKhCsQ7EsMtLpbP5kUIoHeCxmMCEiu/D6nyXX/DnBBIcEXuvrTGGFJFDkcLlfV5bRw/1Jn8Zi6uoK3Yfm08J0e1RmWG9ygeORmvmrFGFvzXiDXZ5rN6F6PMVwoU8LHwBpewxYz5h2elDwtw81ZPA7qq2E7BxCHT+BMBHCGRPdCj4zPiC/zMQuDmlsrx5Cm0cx7T+aFox4fYJZd+Vvzp/O5pEg2pqahtBGSPRqwGOG9CATpzLp3jAlg8kcyv01DbIBAmi/1Qj3+iFS+GvUmbWAVSCcURKiBSxzCxFJ0FNZIhU24udVUeKz3+xPCV1LHvyuDOiFIE11OFhtT98W8WfAfZcg9nvb0Ly3WbuDlUMhOlOTd0wVM4WMR8UqB7xopG5oWZI2VdP/XuHyFSgskjmslwp7TGZgeTGvV3nXaRxLm7o+UeqgMq8MAROnk0VLwPtcxqHfIZjqzByvDgv2nEVQchfjdutVhePhCTuvZBj7JpFYkyl4YvDxF8eoAH4zVPUphjuECnTG3r5YwbqLg=
+    on_success: always
+    on_failure: always      
 branches:
   only:
-    - master
+  - master
 node_js:
-  - "4"
-  - "5"
-  - "6"
-  - "7"
+- '4'
+- '5'
+- '6'
+- '7'
 install:
-  - npm install
+- npm install
 script:
-  - npm run lint && npm run test
+- npm run lint && npm run test
 after_success:
-  - npm run build
+- npm run build
 deploy:
   skip_cleanup: true
   provider: script
   script: npm run maybePublish
   on:
     branch: master
-    node: "7"
+    node: '7'
+env:
+  matrix:
+    secure: kNe25G97K8pupSPIG1hQbbnzbdaL5JmCLZ8FzQdL0zxKgk1XMXb32Bb6Kp1azgu7FARwYGJJMc/DCfWtrZMWOJy1tlGNuqsPbfXEtFKOduiBphxcBLm8mUfw0jWtPWoLmq4ObaL0iiu2eD1k2lfFng+N4qEZENqxDZyPl5zDOAgkduVIllrPABXFNlkBIZ8O4riXDWOTg9NJ9j7RZVOxMkCfmlBLqebyWOVFV0BOZgqU1BpS95tzIkBpHIXAhj0mAt5/NbPh0Cc1NsUm1f2+dS/ifoTqndPKyQexcEONUit3x+vi0zsgad3DQ7iIBDCO3t8l7lvCMK6OfjBxAYHr+xuDcKV6gvwYIp/PCADZgb9DduPbmjgsyhE0VzsaMJ6nObDzO4LKq7RB0zUZipAifcho04NJie72JZOfCPiHPzx83ZRnvCjD0+MomMpC/r+oMcLoa4bVTTIBJ2CoQKBD75geysK1FiHIYkkiG2YbCB3cndhPLzcLH7H1hzTMDKHZiawEHnVL2tQHOOQgJukAA8GZsBOhb+abm8qbiSUKVis9voJzDeSzAv8r72W/eLCTLqkA2tLHcbrWBdYucnhLokoVOv2kWhGrVPwhqEokLm23zDgxTTELX/x6GOog3/oAbMP4Smc2uwAlHz7vGu5Y/4MKEDtC2Ykjvs4oOV3cl50=
