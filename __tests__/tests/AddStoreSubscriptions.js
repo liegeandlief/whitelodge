@@ -7,18 +7,26 @@ import TestComponent from '../TestComponent'
 import TestComponentWhichShouldThrow1 from '../TestComponentWhichShouldThrow1'
 import TestComponentWhichShouldThrow2 from '../TestComponentWhichShouldThrow2'
 import {mount} from 'enzyme'
+import TestStore from '../TestStore'
+import {makeStoresGloballyAvailable} from '../../src/'
 
 global.console.log = jest.fn()
 global.console.error = jest.fn()
 global.console.warn = jest.fn()
 
+const createStoreAndMount = component => {
+  const testStore = new TestStore()
+  makeStoresGloballyAvailable([testStore])
+  return mount(component)
+}
+
 describe('Test a component which subscribes to a store.', () => {
   test('Components with invalid store subscriptions should throw errors.', () => {
-    expect(() => { mount(<TestComponentWhichShouldThrow1 />) }).toThrow()
-    expect(() => { mount(<TestComponentWhichShouldThrow2 />) }).toThrow()
+    expect(() => { createStoreAndMount(<TestComponentWhichShouldThrow1 />) }).toThrow()
+    expect(() => { createStoreAndMount(<TestComponentWhichShouldThrow2 />) }).toThrow()
   })
 
-  const component = mount(<TestComponent />)
+  const component = createStoreAndMount(<TestComponent />)
   const instance = component.instance()
 
   test('It has the correct initial elements and state.', () => {

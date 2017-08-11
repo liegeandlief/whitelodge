@@ -1,11 +1,7 @@
 'use strict'
 
 import React from 'react'
-import {AddStoreSubscriptions, makeStoresGloballyAvailable} from '../src/'
-import TestStore from './TestStore'
-
-const testStore = new TestStore()
-makeStoresGloballyAvailable([testStore])
+import {AddStoreSubscriptions} from '../src/'
 
 class TestComponent extends React.Component {
   render () {
