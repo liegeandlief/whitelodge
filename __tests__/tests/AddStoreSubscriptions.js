@@ -30,7 +30,7 @@ describe('Test a component which subscribes to a store.', () => {
   const instance = component.instance()
 
   test('It has the correct initial elements and state.', () => {
-    expect(component.find('button')).toHaveLength(1)
+    expect(component.find('button')).toHaveLength(5)
     expect(component.find('#counterIs0')).toHaveLength(1)
     expect(component.find('#counterIs1')).toHaveLength(0)
     expect(component.find('#counterIs2')).toHaveLength(0)
