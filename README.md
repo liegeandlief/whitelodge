@@ -133,10 +133,3 @@ This component will be able to access these stores using `this.props.inventory` 
 The most recent previous state of a store can be read from the first item in the `previousStates` array e.g. `this.props.inventory.previousStates[0]`. This can be used to compare the current and previous states of the store in the component's lifecycle methods. Older versions of the state are also available in the array depending on how many previous states the store is configured to keep.
 
 Store methods can be called from props too e.g. `this.props.inventory.addItem('Damn good coffees', 2)`.
-
-## Things to do in future
-
-- Add a CHANGELOG.md file.
-- Make whitelodge work in all JavaScript applications, not just React applications.
-- Allow for server-side rendering.
-- Add tests for memory leaks using the leakage package.
