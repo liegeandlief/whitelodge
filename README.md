@@ -83,6 +83,7 @@ whitelodge's `Store` class defines the following properties so do not define pro
 - logStateToConsole
 - numberOfPreviousStatesToKeep
 - makeGloballyAvailable
+- validateNewState
 - validateArguments
 - doLogStateToConsole
 - addCurrentStateToPreviousStates

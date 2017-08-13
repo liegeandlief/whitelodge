@@ -14,10 +14,6 @@ const throwError = (message, varToDump = 'varToDumpNotReceived') => {
   throw new Error(logPrefix + message)
 }
 
-const validateNewState = newState => {
-  if (!isObject(newState)) throwError('State must be an object.', newState)
-}
-
 export class Store {
   constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 10) {
     const parsedNumberOfPreviousStatesToKeep = Number(numberOfPreviousStatesToKeep)
@@ -41,9 +37,13 @@ export class Store {
     root[rootObjectName].stores[this.name] = this
   }
 
+  validateNewState (newState) {
+    if (!isObject(newState)) throwError('State must be an object.', newState)
+  }
+
   validateArguments (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep) {
     if (typeof name !== 'string' || !name.length) throwError('Store name should be a non-empty string.', name)
-    validateNewState(initialState)
+    this.validateNewState(initialState)
     if (typeof logStateToConsole !== 'boolean') throwError('When indicating whether to log state to console you should pass a boolean value.', logStateToConsole)
     if (isNaN(numberOfPreviousStatesToKeep) || numberOfPreviousStatesToKeep < 1) throwError('When indicating how many previous versions of state to keep you should pass a number > 0.', numberOfPreviousStatesToKeep)
   }
@@ -60,7 +60,7 @@ export class Store {
   }
 
   setStoreState (newState) {
-    validateNewState(newState)
+    this.validateNewState(newState)
     this.addCurrentStateToPreviousStates()
     this.state = Immutable.merge(this.state, newState)
     this.subscribers.forEach(subscriber => {
