@@ -13,6 +13,7 @@ node_js:
 - '5'
 - '6'
 - '7'
+- '8'
 install:
 - npm install
 script:
@@ -25,7 +26,7 @@ deploy:
   script: npm run maybePublish
   on:
     branch: master
-    node: '7'
+    node: '8'
 env:
   matrix:
     secure: kNe25G97K8pupSPIG1hQbbnzbdaL5JmCLZ8FzQdL0zxKgk1XMXb32Bb6Kp1azgu7FARwYGJJMc/DCfWtrZMWOJy1tlGNuqsPbfXEtFKOduiBphxcBLm8mUfw0jWtPWoLmq4ObaL0iiu2eD1k2lfFng+N4qEZENqxDZyPl5zDOAgkduVIllrPABXFNlkBIZ8O4riXDWOTg9NJ9j7RZVOxMkCfmlBLqebyWOVFV0BOZgqU1BpS95tzIkBpHIXAhj0mAt5/NbPh0Cc1NsUm1f2+dS/ifoTqndPKyQexcEONUit3x+vi0zsgad3DQ7iIBDCO3t8l7lvCMK6OfjBxAYHr+xuDcKV6gvwYIp/PCADZgb9DduPbmjgsyhE0VzsaMJ6nObDzO4LKq7RB0zUZipAifcho04NJie72JZOfCPiHPzx83ZRnvCjD0+MomMpC/r+oMcLoa4bVTTIBJ2CoQKBD75geysK1FiHIYkkiG2YbCB3cndhPLzcLH7H1hzTMDKHZiawEHnVL2tQHOOQgJukAA8GZsBOhb+abm8qbiSUKVis9voJzDeSzAv8r72W/eLCTLqkA2tLHcbrWBdYucnhLokoVOv2kWhGrVPwhqEokLm23zDgxTTELX/x6GOog3/oAbMP4Smc2uwAlHz7vGu5Y/4MKEDtC2Ykjvs4oOV3cl50=
