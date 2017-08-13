@@ -1,6 +1,7 @@
 'use-strict'
 
 /* eslint-disable no-undef */
+/* eslint-disable no-new */
 
 import React from 'react'
 import TestComponent from '../TestComponent'
@@ -8,25 +9,23 @@ import TestComponentWhichShouldThrow1 from '../TestComponentWhichShouldThrow1'
 import TestComponentWhichShouldThrow2 from '../TestComponentWhichShouldThrow2'
 import {mount} from 'enzyme'
 import TestStore from '../TestStore'
-import {makeStoresGloballyAvailable} from '../../src/'
 
 global.console.log = jest.fn()
 global.console.error = jest.fn()
 global.console.warn = jest.fn()
 
-const createStoreAndMount = component => {
-  const testStore = new TestStore()
-  makeStoresGloballyAvailable([testStore])
+const createStoreAndMountComponent = component => {
+  new TestStore()
   return mount(component)
 }
 
 describe('Test a component which subscribes to a store.', () => {
   test('Components with invalid store subscriptions should throw errors.', () => {
-    expect(() => { createStoreAndMount(<TestComponentWhichShouldThrow1 />) }).toThrow()
-    expect(() => { createStoreAndMount(<TestComponentWhichShouldThrow2 />) }).toThrow()
+    expect(() => { createStoreAndMountComponent(<TestComponentWhichShouldThrow1 />) }).toThrow()
+    expect(() => { createStoreAndMountComponent(<TestComponentWhichShouldThrow2 />) }).toThrow()
   })
 
-  const component = createStoreAndMount(<TestComponent />)
+  const component = createStoreAndMountComponent(<TestComponent />)
   const instance = component.instance()
 
   test('It has the correct initial elements and state.', () => {

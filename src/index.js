@@ -29,6 +29,16 @@ export class Store {
     this.logStateToConsole = logStateToConsole
     this.numberOfPreviousStatesToKeep = parsedNumberOfPreviousStatesToKeep
     this.setStoreState(initialState)
+    this.makeGloballyAvailable()
+  }
+
+  makeGloballyAvailable () {
+    if (!isObject(root[rootObjectName])) {
+      root[rootObjectName] = {stores: {}}
+    } else {
+      delete root[rootObjectName].stores[this.name]
+    }
+    root[rootObjectName].stores[this.name] = this
   }
 
   validateArguments (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep) {
@@ -75,21 +85,6 @@ export class Store {
       }
     }
   }
-}
-
-export const makeStoresGloballyAvailable = stores => {
-  if (!Array.isArray(stores)) throwError('makeStoresGloballyAvailable expects an array of Store instances.', stores)
-  stores.forEach(store => {
-    if (!(store instanceof Store)) throwError('Invalid Store intance passed to makeStoresGloballyAvailable.', store)
-  })
-  delete root[rootObjectName]
-  const storeNames = []
-  root[rootObjectName] = {stores: stores.reduce((storesObject, store) => {
-    if (storeNames.indexOf(store.name) > -1) throwError('There is already a store with the name "' + store.name + '". Store names must be unique.', storeNames)
-    storeNames.push(store.name)
-    storesObject[store.name] = store
-    return storesObject
-  }, {})}
 }
 
 export const AddStoreSubscriptions = (ChildComponent, storeNames) => class extends React.Component {
