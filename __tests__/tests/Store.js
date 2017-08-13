@@ -50,6 +50,11 @@ test('Throws errors when passed invalid arguments.', () => {
   expect(() => { new Store('testStore', {}, true, 'notANumber') }).toThrow()
 })
 
+test('Is available globally.', () => {
+  const testStore = new Store('testStore')
+  expect(global.whitelodge.stores.testStore).toEqual(testStore)
+})
+
 describe('Test toggling logging of state to console.', () => {
   beforeEach(() => {
     consoleLogMessages = []

@@ -82,30 +82,13 @@ whitelodge's `Store` class defines the following properties so do not define pro
 - subscribers
 - logStateToConsole
 - numberOfPreviousStatesToKeep
+- makeGloballyAvailable
 - validateArguments
 - doLogStateToConsole
 - addCurrentStateToPreviousStates
 - setStoreState
 - subscribe
 - unsubscribe
-
-## Making stores globally available
-
-In order for components to be able to subscribe to stores the stores need to be made globally available. This should be done prior to calling `render` on the application's top-level component by calling `makeStoresGloballyAvailable` and passing it instances of the stores. See the following example:
-
-```javascript
-'use strict'
-
-import ReactDOM from 'react-dom'
-import App from './components/App'
-import {makeStoresGloballyAvailable} from 'whitelodge'
-import Inventory from './stores/Inventory'
-import AnotherStore from './stores/AnotherStore'
-
-makeStoresGloballyAvailable(new Inventory(), new AnotherStore())
-
-ReactDOM.render(<App />, document.getElementById('root'))
-```
 
 ### Subscribing to stores
 
