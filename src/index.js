@@ -36,10 +36,10 @@ export class Store {
     }
     root[rootObjectName].stores[this.name] = this
   }
-  
+
   validateNewState (newState) {
     if (!isObject(newState)) throwError('State must be an object.', newState)
-  }  
+  }
 
   validateArguments (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep) {
     if (typeof name !== 'string' || !name.length) throwError('Store name should be a non-empty string.', name)
