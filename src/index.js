@@ -29,11 +29,7 @@ export class Store {
   }
 
   makeGloballyAvailable () {
-    if (!isObject(root[rootObjectName])) {
-      root[rootObjectName] = {stores: {}}
-    } else {
-      delete root[rootObjectName].stores[this.name]
-    }
+    if (!isObject(root[rootObjectName])) root[rootObjectName] = {stores: {}}
     root[rootObjectName].stores[this.name] = this
   }
 
