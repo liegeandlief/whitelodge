@@ -40,7 +40,7 @@ import {Store} from 'whitelodge'
 
 export default class Inventory extends Store {
   constructor () {
-    super('inventory', {items: [{description:'Cherry pies', quantity: 11)}]}, true, 20)
+    super('inventory', {items: [{description:'Cherry pie', quantity: 11)}]}, true, 20)
   }
 
   addItem (description, quantity) {
@@ -116,4 +116,4 @@ This component will be able to access these stores using `this.props.inventory` 
 
 The most recent previous state of a store can be read from the first item in the `previousStates` array e.g. `this.props.inventory.previousStates[0]`. This can be used to compare the current and previous states of the store in the component's lifecycle methods. Older versions of the state are also available in the array depending on how many previous states the store is configured to keep.
 
-Store methods can be called from props too e.g. `this.props.inventory.addItem('Damn good coffees', 2)`.
+Store methods can be called from props too e.g. `this.props.inventory.addItem('Damn fine coffee', 2)`.
