@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/whitelodge.svg)](https://www.npmjs.com/package/whitelodge) [![Build Status](https://travis-ci.org/liegeandlief/whitelodge.svg?branch=master)](https://travis-ci.org/liegeandlief/whitelodge) [![Known Vulnerabilities](https://snyk.io/test/github/liegeandlief/whitelodge/badge.svg)](https://snyk.io/test/github/liegeandlief/whitelodge)
 
-**whitelodge** is a small library which makes managing state in React applications easy. It takes cues from other libraries such as Redux and MobX but endeavours to be simpler to understand and to use.
+**whitelodge** is a small library which makes state management in React applications easy. It takes cues from other state management libraries such as Redux and MobX but endeavours to be simpler to understand and to use.
 
 ## What does whitelodge do?
 
