@@ -25,7 +25,7 @@ runCommandWithTeardown "jest --verbose" "$teardownCommand"
 eval $teardownCommand
 
 # Run tests using latest versions of peer dependencies
-teardownCommand="$uninstallingEcho && npm uninstall react"
+teardownCommand="$uninstallingEcho && npm uninstall react react-dom react-test-renderer"
 eval $installingEcho
 runCommandWithTeardown "npm install react@latest react-dom@latest react-test-renderer@latest --no-save" "$teardownCommand"
 eval $runningTestsEcho
