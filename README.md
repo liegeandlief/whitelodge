@@ -23,7 +23,7 @@ whitelodge does the following and nothing more:
 Stores are just classes which extend whitelodge's `Store` class. The constructor of a store should call `super` passing it the following arguments:
 
 - The store's name (required). This should be a string and is the key by which the store will referenced from other parts of the application. All stores which are made globally available in an application should have different names.
-- The store's initial state (optional, defaults to `{}`). This should be an object.
+- The store's initial state (optional, defaults to `{}`). This should be an object. Preparation of the initial state should be completed before a store is initialised i.e. if preparation of the initial state relies on asynchronous data fetching then this data fetching should be completed prior to initialising the store - this applies both on the client and the server.
 - Whether or not to log changes to this store's state to the console (optional, defaults to `false`). This should be a boolean.
 - The number of previous states to keep in the store's `previousStates` property (optional, defaults to 10). This should be an integer greater than zero.
 
@@ -38,9 +38,11 @@ A simple store for an inventory of items might look as follows:
 
 import {Store} from 'whitelodge'
 
+const initialState = {items: [{description:'Cherry pie', quantity: 11)}]}
+
 export default class Inventory extends Store {
   constructor () {
-    super('inventory', {items: [{description:'Cherry pie', quantity: 11)}]}, true, 20)
+    super('inventory', initialState, true, 20)
   }
 
   addItem (description, quantity) {
@@ -91,6 +93,16 @@ whitelodge's `Store` class defines the following properties so do not define pro
 - subscribe
 - unsubscribe
 
+### Initialisation of stores
+
+Stores should be initialised prior to calling any of the render methods on React, ReactDOM or ReactDOMServer. Initialisation of a store is as simple as:
+
+```javascript
+import Inventory from './stores/Inventory'
+
+new Inventory()
+```
+
 ### Subscribing to stores
 
 Components can access stores by subscribing to them as follows:
@@ -117,3 +129,94 @@ This component will be able to access these stores using `this.props.inventory` 
 The most recent previous state of a store can be read from the first item in the `previousStates` array e.g. `this.props.inventory.previousStates[0]`. This can be used to compare the current and previous states of the store in the component's lifecycle methods. Older versions of the state are also available in the array depending on how many previous states the store is configured to keep.
 
 Store methods can be called from props too e.g. `this.props.inventory.addItem('Damn fine coffee', 2)`.
+
+### Server-side rendering
+
+When building a React application a common scenario is that the initial render is performed on the server. Fortunately whitelodge supports server-side rendering. This is best demonstrated with an example.
+
+The following module exposes a function called `generateHTML`:
+
+#### server.js
+
+```javascript
+import TopLevelAppComponent from './components/TopLevelAppComponent'
+import {renderInitialStatesOfStores} from 'whitelodge'
+import {renderToString} from 'react-dom/server'
+import store1 from './stores/store1'
+import store2 from './stores/store2'
+
+new store1()
+new store2()
+
+const generateHTML = () => {
+  return `<!doctype html>
+  <html>
+    <head>
+      <title>React application with whitelodge, rendered on the server</title>
+    </head>
+    <body>
+      <div id="app">${renderInitialStatesOfStores() + renderToString(<TopLevelAppComponent />)}</div>
+      <script src="bundle.js"></script>
+    </body>
+  </html>`
+}
+
+export default generateHTML
+```
+
+The `generateHTML` function would be called when a request is made to the server. A simple example with Express might look as follows:
+
+```javascript
+import express from 'express'
+import generateHTML from './server.js'
+
+const app = express()
+
+app.get('/', function (req, res) {
+  res.send(generateHTML())
+})
+```
+
+The `bundle.js` file referenced in the `server.js` file would be created by bundling the React application using a module bundler such as webpack. The entry point for creating the bundle would be a module similar to the following:
+
+#### client.js
+
+```javascript
+import TopLevelAppComponent from './components/TopLevelAppComponent'
+import {render} from 'react-dom'
+import store1 from './stores/store1'
+import store2 from './stores/store2'
+
+new store1()
+new store2()
+
+// The ID here is the ID of the div in the HTML generated in server.js
+render(<TopLevelAppComponent />, document.getElementById('app'))
+```
+
+When performing the initial render on the server it is unnecessary to prepare the initial state again on the client. Therefore the inventory store from above can be tweaked as follows to ensure that initial state preparation only runs on the server:
+
+```javascript
+'use strict'
+
+import {Store} from 'whitelodge'
+import isNode from 'detect-node'
+
+let initialState = {}
+if (isNode) initialState = {items: [{description:'Cherry pie', quantity: 11)}]}
+
+export default class Inventory extends Store {
+  constructor () {
+    super('inventory', initialState, true, 20)
+  }
+
+  addItem (description, quantity) {
+    // Emptied for brevity
+  }
+
+  sumAllItemsTotalQuantities () {
+    // Emptied for brevity
+  }  
+
+}
+```

@@ -43,6 +43,18 @@ test('Has the expected properties when all arguments are passed.', () => {
   expect(testStore).toHaveProperty('numberOfPreviousStatesToKeep', 5)
 })
 
+test('Has the expected properties when all arguments are passed and pre-rendered state is available.', () => {
+  window.whitelodge.preRenderedInitialStates = {testStore: {b: 2}}
+  const testStore = new Store('testStore', {a: 1}, true, 5)
+  expect(testStore).toHaveProperty('name', 'testStore')
+  expect(testStore).toHaveProperty('state', {b: 2})
+  expect(testStore).toHaveProperty('previousStates', [{}])
+  expect(testStore).toHaveProperty('subscribers', [])
+  expect(testStore).toHaveProperty('logStateToConsole', true)
+  expect(testStore).toHaveProperty('numberOfPreviousStatesToKeep', 5)
+  delete window.whitelodge.preRenderedInitialStates
+})
+
 test('Throws errors when passed invalid arguments.', () => {
   expect(() => { new Store('testStore', 'notAnObject') }).toThrow()
   expect(() => { new Store('testStore', {}, 'notABoolean') }).toThrow()
