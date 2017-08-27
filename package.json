@@ -1,6 +1,6 @@
 {
   "name": "whitelodge",
-  "version": "3.0.6",
+  "version": "3.1.0",
   "description": "whitelodge is a small library which makes managing state in React applications easy. It takes cues from other libraries such as Redux and MobX but endeavours to be simpler to understand and to use.",
   "main": "./dist/index.js",
   "config": {
@@ -48,14 +48,14 @@
     "window-or-global": "^1.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
+    "babel-cli": "^6.26.0",
     "babel-jest": "^20.0.3",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "enzyme": "^2.9.1",
     "jest": "^20.0.4",
     "snazzy": "^7.0.0",
-    "standard": "^10.0.2"
+    "standard": "^10.0.3"
   },
   "peerDependencies": {
     "react": ">=0.13.0"
@@ -64,6 +64,9 @@
     "testRegex": "(/__tests__/tests/.*|(\\.|/)(test|spec))\\.jsx?$",
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
+    },
+    "globals": {
+      "window": true
     }
   }
 }

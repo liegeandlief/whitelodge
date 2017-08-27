@@ -24,7 +24,12 @@ export class Store {
     this.subscribers = []
     this.logStateToConsole = logStateToConsole
     this.numberOfPreviousStatesToKeep = parsedNumberOfPreviousStatesToKeep
-    this.setStoreState(initialState)
+    if (typeof window !== 'undefined' && typeof window[rootObjectName] !== 'undefined' && typeof window[rootObjectName].preRenderedInitialStates !== 'undefined' && typeof window[rootObjectName].preRenderedInitialStates[this.name] !== 'undefined') {
+      this.setStoreState(window[rootObjectName].preRenderedInitialStates[this.name])
+      delete window[rootObjectName].preRenderedInitialStates[this.name]
+    } else {
+      this.setStoreState(initialState)
+    }
     this.makeGloballyAvailable()
   }
 
@@ -113,4 +118,11 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames) => class exten
   render () {
     return <ChildComponent {...this.props} {...this.state} />
   }
+}
+
+export const renderInitialStatesOfStores = () => {
+  const script = Object.keys(root[rootObjectName].stores).reduce((assignments, storeName) => {
+    return assignments + 'window["' + rootObjectName + '"].preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(root[rootObjectName].stores[storeName].state) + ';'
+  }, '<script type="text/javascript">')
+  return script + '</script>'
 }
