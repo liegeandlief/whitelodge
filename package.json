@@ -58,7 +58,7 @@
     "standard": "^10.0.3"
   },
   "peerDependencies": {
-    "react": ">=0.13.0"
+    "react": ">=0.13.0 <=15.6.1"
   },
   "jest": {
     "testRegex": "(/__tests__/tests/.*|(\\.|/)(test|spec))\\.jsx?$",
