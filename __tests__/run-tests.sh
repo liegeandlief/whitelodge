@@ -24,10 +24,10 @@ eval $runningTestsEcho
 runCommandWithTeardown "jest --verbose" "$teardownCommand"
 eval $teardownCommand
 
-# Run tests using latest versions of peer dependencies
+# Run tests using latest compatible versions of peer dependencies
 teardownCommand="$uninstallingEcho && npm uninstall react react-dom react-test-renderer"
 eval $installingEcho
-runCommandWithTeardown "npm install react@latest react-dom@latest react-test-renderer@latest --no-save" "$teardownCommand"
+runCommandWithTeardown "npm install react@15.6.1 react-dom@15.6.1 react-test-renderer@15.6.1 --no-save" "$teardownCommand"
 eval $runningTestsEcho
 runCommandWithTeardown "jest --verbose" "$teardownCommand"
 eval $teardownCommand
