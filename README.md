@@ -27,7 +27,7 @@ Stores are just classes which extend whitelodge's `Store` class. The constructor
 - Whether or not to log changes to this store's state to the console (optional, defaults to `false`). This should be a boolean.
 - The number of previous states to keep in the store's `previousStates` property (optional, defaults to 10). This should be an integer greater than zero.
 
-The store should then contain methods for mutating its state. Mutation methods should update the store's state by calling `this.setStoreState` and passing it the new state object. This new state object is copied into the existing state using `Object.assign`. Once the store's state has been updated then its most recent previous state is available under the store's `previousStates` property as the first object in the array.
+The store should then contain methods for mutating its state. Mutation methods should update the store's state by calling `this.setStoreState` and passing it the new state object. This new state object is copied into the existing state using seamless-immutable's `Immutable.merge` function. Once the store's state has been updated then its most recent previous state is available under the store's `previousStates` property as the first object in the array.
 
 The store can also contain methods which do not mutate the state but do something with its current value and return the result of this operation (see the `sumAllItemsTotalQuantities` method in the class below).
 
