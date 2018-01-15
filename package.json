@@ -1,6 +1,6 @@
 {
   "name": "whitelodge",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "whitelodge is a small library which makes managing state in React applications easy. It takes cues from other libraries such as Redux and MobX but endeavours to be simpler to understand and to use.",
   "main": "./dist/index.js",
   "config": {
