@@ -110,8 +110,8 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames) => class exten
   }
 
   componentWillUnmount () {
-    root[rootObjectName].stores.forEach(store => {
-      store.unsubscribe(this)
+    Object.keys(root[rootObjectName].stores).forEach(key => {
+      root[rootObjectName].stores[key].unsubscribe(this)
     })
   }
 
