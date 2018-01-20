@@ -7,8 +7,11 @@ import React from 'react'
 import TestComponent from '../TestComponent'
 import TestComponentWhichShouldThrow1 from '../TestComponentWhichShouldThrow1'
 import TestComponentWhichShouldThrow2 from '../TestComponentWhichShouldThrow2'
-import {mount} from 'enzyme'
+import {configure, mount} from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16' // Required for enzyme to work with React 16
 import TestStore from '../TestStore'
+
+configure({ adapter: new Adapter() }) // Required for enzyme to work with React 16
 
 global.console.log = jest.fn()
 global.console.error = jest.fn()

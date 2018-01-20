@@ -16,18 +16,10 @@ installingEcho="greenEcho \"Installing packages required for tests\""
 runningTestsEcho="greenEcho \"Running tests\""
 uninstallingEcho="greenEcho \"Uninstalling packages required for tests\""
 
-# Run tests using lowest versions of peer dependencies
-teardownCommand="$uninstallingEcho && npm uninstall react"
-eval $installingEcho
-runCommandWithTeardown "npm install react@0.13.0 --no-save" "$teardownCommand"
-eval $runningTestsEcho
-runCommandWithTeardown "jest --verbose" "$teardownCommand"
-eval $teardownCommand
-
 # Run tests using latest compatible versions of peer dependencies
 teardownCommand="$uninstallingEcho && npm uninstall react react-dom react-test-renderer"
 eval $installingEcho
-runCommandWithTeardown "npm install react@15.6.1 react-dom@15.6.1 react-test-renderer@15.6.1 --no-save" "$teardownCommand"
+runCommandWithTeardown "npm install react react-dom react-test-renderer --no-save" "$teardownCommand"
 eval $runningTestsEcho
 runCommandWithTeardown "jest --verbose" "$teardownCommand"
 eval $teardownCommand

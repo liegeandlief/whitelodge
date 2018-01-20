@@ -89,8 +89,8 @@ export class Store {
 }
 
 export const AddStoreSubscriptions = (ChildComponent, storeNames) => class extends React.Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.subscribeToStores()
   }
 

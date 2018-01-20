@@ -5,7 +5,10 @@
 
 import React from 'react'
 import {Store} from '../../src/'
-import {mount} from 'enzyme'
+import {configure, mount} from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16' // Required for enzyme to work with React 16
+
+configure({ adapter: new Adapter() }) // Required for enzyme to work with React 16
 
 let consoleLogMessages = []
 let consoleLogDates = []
