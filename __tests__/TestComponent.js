@@ -2,15 +2,17 @@
 
 import React from 'react'
 import {AddStoreSubscriptions} from '../src/'
+import root from 'window-or-global'
 
 class TestComponent extends React.Component {
   render () {
+    const {counter} = root.whitelodge.stores.testStore.storeState
     return (
       <div>
-        <button onClick={() => { this.props.testStore.incrementCounter(this.props.testStore.state.counter + 1) }} />
-        {this.props.testStore.state.counter === 0 && <div id='counterIs0' />}
-        {this.props.testStore.state.counter === 1 && <div id='counterIs1' />}
-        {this.props.testStore.state.counter === 2 && <div id='counterIs2' />}
+        <button onClick={() => { root.whitelodge.stores.testStore.incrementCounter() }} />
+        {counter === 0 && <div id='counterIs0' />}
+        {counter === 1 && <div id='counterIs1' />}
+        {counter === 2 && <div id='counterIs2' />}
       </div>
     )
   }

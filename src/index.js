@@ -6,7 +6,6 @@ import React from 'react'
 import root from 'window-or-global'
 import Immutable from 'seamless-immutable'
 
-const rootObjectName = 'whitelodge'
 const logPrefix = 'whitelodge | '
 
 const throwError = (message, varToDump = 'varToDumpNotReceived') => {
@@ -14,74 +13,80 @@ const throwError = (message, varToDump = 'varToDumpNotReceived') => {
   throw new Error(logPrefix + message)
 }
 
+const storePrivateMethods = {
+  makeGloballyAvailable: function () {
+    if (!isObject(root.whitelodge)) root.whitelodge = {stores: {}}
+    root.whitelodge.stores[this.storeSettings.name] = this
+  },
+
+  validateNewState: function (newState) {
+    if (!isObject(newState)) throwError('State must be an object.', newState)
+  },
+
+  validateArguments: function (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep) {
+    if (typeof name !== 'string' || !name.length) throwError('Store name should be a non-empty string.', name)
+    storePrivateMethods.validateNewState.call(this, initialState)
+    if (typeof logStateToConsole !== 'boolean') throwError('When indicating whether to log state to console you should pass a boolean value.', logStateToConsole)
+    if (isNaN(numberOfPreviousStatesToKeep) || numberOfPreviousStatesToKeep < 1) throwError('When indicating how many previous versions of state to keep you should pass a number > 0.', numberOfPreviousStatesToKeep)
+  },
+
+  doLogStateToConsole: function () {
+    if (this.storeSettings.logStateToConsole) console.log(logPrefix + this.storeSettings.name + ' | ', new Date(), this.storeState)
+  },
+
+  addCurrentStateToPreviousStates: function () {
+    this.previousStoreStates.unshift(this.storeState)
+    if (this.previousStoreStates.length > this.storeSettings.numberOfPreviousStatesToKeep) {
+      this.previousStoreStates = this.previousStoreStates.slice(0, this.storeSettings.numberOfPreviousStatesToKeep)
+    }
+  }
+}
+
 export class Store {
-  constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 10) {
+  constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 1) {
     const parsedNumberOfPreviousStatesToKeep = Number(numberOfPreviousStatesToKeep)
-    this.validateArguments(name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep)
-    this.name = name
-    this.state = {}
-    this.previousStates = []
-    this.subscribers = []
-    this.logStateToConsole = logStateToConsole
-    this.numberOfPreviousStatesToKeep = parsedNumberOfPreviousStatesToKeep
-    if (typeof window !== 'undefined' && typeof window[rootObjectName] !== 'undefined' && typeof window[rootObjectName].preRenderedInitialStates !== 'undefined' && typeof window[rootObjectName].preRenderedInitialStates[this.name] !== 'undefined') {
-      this.setStoreState(window[rootObjectName].preRenderedInitialStates[this.name])
-      delete window[rootObjectName].preRenderedInitialStates[this.name]
+    storePrivateMethods.validateArguments.call(this, name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep)
+
+    this.storeSettings = {
+      name,
+      logStateToConsole,
+      numberOfPreviousStatesToKeep: parsedNumberOfPreviousStatesToKeep
+    }
+    this.storeState = {}
+    this.previousStoreStates = []
+    this.storeSubscribers = []
+
+    if (typeof window !== 'undefined' && typeof window.whitelodge !== 'undefined' && typeof window.whitelodge.preRenderedInitialStates !== 'undefined' && typeof window.whitelodge.preRenderedInitialStates[this.storeSettings.name] !== 'undefined') {
+      this.setStoreState(window.whitelodge.preRenderedInitialStates[this.storeSettings.name])
+      delete window.whitelodge.preRenderedInitialStates[this.storeSettings.name]
     } else {
       this.setStoreState(initialState)
     }
-    this.makeGloballyAvailable()
-  }
-
-  makeGloballyAvailable () {
-    if (!isObject(root[rootObjectName])) root[rootObjectName] = {stores: {}}
-    root[rootObjectName].stores[this.name] = this
-  }
-
-  validateNewState (newState) {
-    if (!isObject(newState)) throwError('State must be an object.', newState)
-  }
-
-  validateArguments (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep) {
-    if (typeof name !== 'string' || !name.length) throwError('Store name should be a non-empty string.', name)
-    this.validateNewState(initialState)
-    if (typeof logStateToConsole !== 'boolean') throwError('When indicating whether to log state to console you should pass a boolean value.', logStateToConsole)
-    if (isNaN(numberOfPreviousStatesToKeep) || numberOfPreviousStatesToKeep < 1) throwError('When indicating how many previous versions of state to keep you should pass a number > 0.', numberOfPreviousStatesToKeep)
-  }
-
-  doLogStateToConsole () {
-    if (this.logStateToConsole) console.log(logPrefix + this.name + ' | ', new Date(), this.state)
-  }
-
-  addCurrentStateToPreviousStates () {
-    this.previousStates.unshift(this.state)
-    if (this.previousStates.length > this.numberOfPreviousStatesToKeep) {
-      this.previousStates = this.previousStates.slice(0, this.numberOfPreviousStatesToKeep)
-    }
+    storePrivateMethods.makeGloballyAvailable.call(this)
   }
 
   setStoreState (newState) {
-    this.validateNewState(newState)
-    this.addCurrentStateToPreviousStates()
-    this.state = Immutable.merge(this.state, newState)
-    this.subscribers.forEach(subscriber => {
-      subscriber.setState({[this.name]: this})
+    storePrivateMethods.validateNewState.call(this, newState)
+    storePrivateMethods.addCurrentStateToPreviousStates.call(this)
+    this.storeState = Immutable.merge(this.storeState, newState)
+    this.storeSubscribers.forEach(subscriber => {
+      subscriber.setState({[this.storeSettings.name]: (new Date()).getTime()})
     })
-    this.doLogStateToConsole()
+    storePrivateMethods.doLogStateToConsole.call(this)
   }
 
-  subscribe (newSubscriber) {
+  subscribeToStore (newSubscriber) {
     if (!isFunction(newSubscriber.setState)) throwError('Store subscribers must be components with a setState function as a property.', newSubscriber)
-    this.subscribers.forEach(subscriber => {
-      if (subscriber === newSubscriber) throwError('Component is already subscribed to the store "' + this.name + '".', newSubscriber)
+    this.storeSubscribers.forEach(subscriber => {
+      if (subscriber === newSubscriber) throwError('Component is already subscribed to the store "' + this.storeSettings.name + '".', newSubscriber)
     })
-    this.subscribers.push(newSubscriber)
+    this.storeSubscribers.push(newSubscriber)
   }
 
-  unsubscribe (unsubscriber) {
-    for (let i = 0; i < this.subscribers.length; i++) {
-      if (this.subscribers[i] === unsubscriber) {
-        this.subscribers.splice(i, 1)
+  unsubscribeFromStore (unsubscriber) {
+    for (let i = 0; i < this.storeSubscribers.length; i++) {
+      if (this.storeSubscribers[i] === unsubscriber) {
+        this.storeSubscribers.splice(i, 1)
         break
       }
     }
@@ -101,28 +106,28 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames) => class exten
 
     storeNames.forEach(storeName => {
       if (typeof storeName !== 'string') throwError('Each store name passed to AddStoreSubscriptions should be a string.', storeName)
-      if (!root[rootObjectName].stores.hasOwnProperty(storeName)) throwError('There is not store called "' + storeName + '".', root[rootObjectName])
-      initialState[storeName] = root[rootObjectName].stores[storeName]
-      root[rootObjectName].stores[storeName].subscribe(this)
+      if (!root.whitelodge.stores.hasOwnProperty(storeName)) throwError('There is not store called "' + storeName + '".', root.whitelodge)
+      initialState[storeName] = (new Date()).getTime()
+      root.whitelodge.stores[storeName].subscribeToStore(this)
     })
 
     this.state = initialState
   }
 
   componentWillUnmount () {
-    Object.keys(root[rootObjectName].stores).forEach(key => {
-      root[rootObjectName].stores[key].unsubscribe(this)
+    Object.keys(root.whitelodge.stores).forEach(key => {
+      root.whitelodge.stores[key].unsubscribeFromStore(this)
     })
   }
 
   render () {
-    return <ChildComponent {...this.props} {...this.state} />
+    return <ChildComponent whitelodge={this.state} {...this.props} />
   }
 }
 
 export const renderInitialStatesOfStores = () => {
-  const script = Object.keys(root[rootObjectName].stores).reduce((assignments, storeName) => {
-    return assignments + 'window["' + rootObjectName + '"].preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(root[rootObjectName].stores[storeName].state) + ';'
+  const script = Object.keys(root.whitelodge.stores).reduce((assignments, storeName) => {
+    return assignments + 'window.whitelodge.preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(root.whitelodge.stores[storeName].storeState) + ';'
   }, '<script type="text/javascript">')
   return script + '</script>'
 }

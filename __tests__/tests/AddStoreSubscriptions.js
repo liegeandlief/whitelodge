@@ -28,16 +28,18 @@ describe('Test a component which subscribes to a store.', () => {
     expect(() => { createStoreAndMountComponent(<TestComponentWhichShouldThrow2 />) }).toThrow()
   })
 
-  const component = createStoreAndMountComponent(<TestComponent />)
-  const instance = component.instance()
+  let component, instance, storeUpdatedTime1, storeUpdatedTime2, storeUpdatedTime3, storeUpdatedTime4
 
   test('It has the correct initial elements and state.', () => {
+    component = createStoreAndMountComponent(<TestComponent />)
+    instance = component.instance()
     expect(component.find('button')).toHaveLength(1)
     expect(component.find('#counterIs0')).toHaveLength(1)
     expect(component.find('#counterIs1')).toHaveLength(0)
     expect(component.find('#counterIs2')).toHaveLength(0)
     expect(instance.state).toHaveProperty('testStore')
-    expect(instance.state.testStore.state.counter).toEqual(0)
+    storeUpdatedTime1 = instance.state.testStore
+    expect(typeof storeUpdatedTime1).toBe('number')
   })
 
   test('It has the correct elements and state after click event which should update state via a store mutation method.', () => {
@@ -47,20 +49,26 @@ describe('Test a component which subscribes to a store.', () => {
     expect(component.find('#counterIs1')).toHaveLength(1)
     expect(component.find('#counterIs2')).toHaveLength(0)
     expect(instance.state).toHaveProperty('testStore')
-    expect(instance.state.testStore.state.counter).toEqual(1)
+    storeUpdatedTime2 = instance.state.testStore
+    expect(typeof storeUpdatedTime2).toBe('number')
+    expect(storeUpdatedTime2).toBeGreaterThan(storeUpdatedTime1)
     component.find('button').simulate('click')
     expect(component.find('button')).toHaveLength(1)
     expect(component.find('#counterIs0')).toHaveLength(0)
     expect(component.find('#counterIs1')).toHaveLength(0)
     expect(component.find('#counterIs2')).toHaveLength(1)
     expect(instance.state).toHaveProperty('testStore')
-    expect(instance.state.testStore.state.counter).toEqual(2)
+    storeUpdatedTime3 = instance.state.testStore
+    expect(typeof storeUpdatedTime3).toBe('number')
+    expect(storeUpdatedTime3).toBeGreaterThan(storeUpdatedTime2)
     component.find('button').simulate('click')
     expect(component.find('button')).toHaveLength(1)
     expect(component.find('#counterIs0')).toHaveLength(0)
     expect(component.find('#counterIs1')).toHaveLength(0)
     expect(component.find('#counterIs2')).toHaveLength(0)
     expect(instance.state).toHaveProperty('testStore')
-    expect(instance.state.testStore.state.counter).toEqual(3)
+    storeUpdatedTime4 = instance.state.testStore
+    expect(typeof storeUpdatedTime4).toBe('number')
+    expect(storeUpdatedTime4).toBeGreaterThan(storeUpdatedTime3)
   })
 })
