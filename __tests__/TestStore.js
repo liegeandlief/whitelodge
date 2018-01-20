@@ -8,6 +8,6 @@ export default class TestStore extends Store {
   }
 
   incrementCounter () {
-    this.setStoreState({'counter': this.state.counter + 1})
+    this.setStoreState({'counter': this.storeState.counter + 1})
   }
 }
