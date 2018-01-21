@@ -13,7 +13,7 @@ whitelodge does the following and nothing more:
 
 ## How do I install whitelodge?
 
-- Your application should have a dependency of React >=0.13.0.
+- Your application should have a dependency of React >=16.0.0.
 - Then run `npm install whitelodge`
 
 ## How do I use whitelodge?
