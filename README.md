@@ -43,7 +43,7 @@ const initialState = {items: [{description:'Cherry pie', quantity: 11)}]}
 
 export default class Inventory extends Store {
   constructor () {
-    super('inventory', initialState, true, 20)
+    super('inventory', initialState, global, true, 20)
   }
 
   addItem (description, quantity) {
@@ -211,7 +211,7 @@ if (isNode) initialState = {items: [{description:'Cherry pie', quantity: 11)}]}
 
 export default class Inventory extends Store {
   constructor () {
-    super('inventory', initialState, true, 20)
+    super('inventory', initialState, global, true, 20)
   }
 
   addItem (description, quantity) {
