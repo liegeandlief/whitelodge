@@ -7,6 +7,7 @@ import React from 'react'
 import TestComponent from '../TestComponent'
 import TestComponentWhichShouldThrow1 from '../TestComponentWhichShouldThrow1'
 import TestComponentWhichShouldThrow2 from '../TestComponentWhichShouldThrow2'
+import TestComponentWhichShouldThrow3 from '../TestComponentWhichShouldThrow3'
 import {configure, mount} from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16' // Required for enzyme to work with React 16
 import TestStore from '../TestStore'
@@ -26,6 +27,7 @@ describe('Test a component which subscribes to a store.', () => {
   test('Components with invalid store subscriptions should throw errors.', () => {
     expect(() => { createStoreAndMountComponent(<TestComponentWhichShouldThrow1 />) }).toThrow()
     expect(() => { createStoreAndMountComponent(<TestComponentWhichShouldThrow2 />) }).toThrow()
+    expect(() => { createStoreAndMountComponent(<TestComponentWhichShouldThrow3 />) }).toThrow()
   })
 
   let component, instance, storeUpdatedTime1, storeUpdatedTime2, storeUpdatedTime3, storeUpdatedTime4

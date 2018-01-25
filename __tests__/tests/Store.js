@@ -38,7 +38,7 @@ test('Has the expected properties when no arguments except "name" are passed.', 
 })
 
 test('Has the expected properties when all arguments are passed.', () => {
-  const testStore = new Store('testStore', {a: 1}, true, 5)
+  const testStore = new Store('testStore', {a: 1}, window, true, 5)
   expect(testStore).toHaveProperty('storeSettings')
   expect(testStore).toHaveProperty('storeState', {a: 1})
   expect(testStore).toHaveProperty('previousStoreStates', [{}])
@@ -50,7 +50,7 @@ test('Has the expected properties when all arguments are passed.', () => {
 
 test('Has the expected properties when all arguments are passed and pre-rendered state is available.', () => {
   window.whitelodge.preRenderedInitialStates = {testStore: {b: 2}}
-  const testStore = new Store('testStore', {a: 1}, true, 5)
+  const testStore = new Store('testStore', {a: 1}, window, true, 5)
   expect(testStore).toHaveProperty('storeSettings')
   expect(testStore).toHaveProperty('storeState', {b: 2})
   expect(testStore).toHaveProperty('previousStoreStates', [{}])
@@ -63,9 +63,10 @@ test('Has the expected properties when all arguments are passed and pre-rendered
 
 test('Throws errors when passed invalid arguments.', () => {
   expect(() => { new Store('testStore', 'notAnObject') }).toThrow()
-  expect(() => { new Store('testStore', {}, 'notABoolean') }).toThrow()
-  expect(() => { new Store('testStore', {}, true, 0) }).toThrow()
-  expect(() => { new Store('testStore', {}, true, 'notANumber') }).toThrow()
+  expect(() => { new Store('testStore', {}, 'notAnObject') }).toThrow()
+  expect(() => { new Store('testStore', {}, window, 'notABoolean') }).toThrow()
+  expect(() => { new Store('testStore', {}, window, true, 0) }).toThrow()
+  expect(() => { new Store('testStore', {}, window, true, 'notANumber') }).toThrow()
 })
 
 test('Is available globally.', () => {
@@ -88,7 +89,7 @@ describe('Test toggling logging of state to console.', () => {
   })
 
   test('Does log state to console.', () => {
-    new Store('testStore', {a: 1}, true)
+    new Store('testStore', {a: 1}, window, true)
     expect(consoleLogMessages).toHaveLength(1)
     expect(consoleLogDates).toHaveLength(1)
     expect(consoleLogStates).toHaveLength(1)
@@ -105,7 +106,7 @@ describe('Test toggling logging of state to console.', () => {
 })
 
 test('Setting state works and keeps the correct number of previous states.', () => {
-  const testStore = new Store('testStore', {a: 1, b: 1}, false, 3)
+  const testStore = new Store('testStore', {a: 1, b: 1}, window, false, 3)
   expect(testStore).toHaveProperty('storeState', {a: 1, b: 1})
   expect(testStore).toHaveProperty('previousStoreStates', [{}])
   testStore.setStoreState({a: 2})
