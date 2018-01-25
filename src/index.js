@@ -43,7 +43,7 @@ const storePrivateMethods = {
 }
 
 export class Store {
-  constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 1) {
+  constructor (name, initialState = {}, logStateToConsole = false, numberOfPreviousStatesToKeep = 1, globalScope = window) {
     const parsedNumberOfPreviousStatesToKeep = Number(numberOfPreviousStatesToKeep)
     storePrivateMethods.validateArguments.call(this, name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep)
 
@@ -56,9 +56,9 @@ export class Store {
     this.previousStoreStates = []
     this.storeSubscribers = []
 
-    if (typeof window !== 'undefined' && typeof window.whitelodge !== 'undefined' && typeof window.whitelodge.preRenderedInitialStates !== 'undefined' && typeof window.whitelodge.preRenderedInitialStates[this.storeSettings.name] !== 'undefined') {
-      this.setStoreState(window.whitelodge.preRenderedInitialStates[this.storeSettings.name])
-      delete window.whitelodge.preRenderedInitialStates[this.storeSettings.name]
+    if (typeof globalScope !== 'undefined' && typeof globalScope.whitelodge !== 'undefined' && typeof globalScope.whitelodge.preRenderedInitialStates !== 'undefined' && typeof globalScope.whitelodge.preRenderedInitialStates[this.storeSettings.name] !== 'undefined') {
+      this.setStoreState(globalScope.whitelodge.preRenderedInitialStates[this.storeSettings.name])
+      delete globalScope.whitelodge.preRenderedInitialStates[this.storeSettings.name]
     } else {
       this.setStoreState(initialState)
     }
