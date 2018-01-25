@@ -7,9 +7,13 @@ import Immutable from 'seamless-immutable'
 
 const logPrefix = 'whitelodge | '
 
-const throwError = (message, varToDump = 'varToDumpNotReceived') => {
-  if (varToDump !== 'varToDumpNotReceived') console.error(varToDump)
+const throwError = (message, varToDump = '§varToDumpNotReceived§') => {
+  if (varToDump !== '§varToDumpNotReceived§') console.error(varToDump)
   throw new Error(logPrefix + message)
+}
+
+const validateGlobalScope = globalScope => {
+  if (!isObject(globalScope)) throwError('Global scope must be an object.', globalScope)
 }
 
 const storePrivateMethods = {
