@@ -6,6 +6,8 @@ import isString from 'is-string'
 import React from 'react'
 import {merge} from 'seamless-immutable'
 
+/******************************************************************************/
+
 const logPrefix = 'whitelodge | '
 
 const throwError = (message, varToDump = '§varToDumpNotReceived§') => {
@@ -17,43 +19,7 @@ const validateGlobalScope = globalScope => {
   if (!isObject(globalScope)) throwError('Global scope must be an object.', globalScope)
 }
 
-const storePrivateMethods = {
-  makeGloballyAvailable: function (globalScope) {
-    if (!isObject(globalScope.whitelodge)) globalScope.whitelodge = {stores: {}}
-    globalScope.whitelodge.stores[this.storeSettings.name] = this
-  },
-
-  validateNewState: function (newState) {
-    if (!isObject(newState)) throwError('State must be an object.', newState)
-  },
-
-  validateArguments: function (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep, globalScope) {
-    if (typeof name !== 'string' || !name.length) {
-      throwError('Store name should be a non-empty string.', name)
-    }
-    storePrivateMethods.validateNewState.call(this, initialState)
-    if (typeof logStateToConsole !== 'boolean') {
-      throwError('When indicating whether to log state to console you should pass a boolean value.', logStateToConsole)
-    }
-    if (isNaN(numberOfPreviousStatesToKeep) || numberOfPreviousStatesToKeep < 1) {
-      throwError('When indicating how many previous versions of state to keep you should pass a number > 0.', numberOfPreviousStatesToKeep)
-    }
-    validateGlobalScope(globalScope)
-  },
-
-  doLogStateToConsole: function () {
-    if (this.storeSettings.logStateToConsole) {
-      console.log(logPrefix + this.storeSettings.name + ' | ', new Date(), this.storeState)
-    }
-  },
-
-  addCurrentStateToPreviousStates: function () {
-    this.previousStoreStates.unshift(this.storeState)
-    if (this.previousStoreStates.length > this.storeSettings.numberOfPreviousStatesToKeep) {
-      this.previousStoreStates = this.previousStoreStates.slice(0, this.storeSettings.numberOfPreviousStatesToKeep)
-    }
-  }
-}
+/******************************************************************************/
 
 export class Store {
   constructor (name, initialState = {}, globalScope = window, logStateToConsole = false, numberOfPreviousStatesToKeep = 1) {
@@ -115,6 +81,46 @@ export class Store {
   }
 }
 
+const storePrivateMethods = {
+  makeGloballyAvailable: function (globalScope) {
+    if (!isObject(globalScope.whitelodge)) globalScope.whitelodge = {stores: {}}
+    globalScope.whitelodge.stores[this.storeSettings.name] = this
+  },
+
+  validateNewState: function (newState) {
+    if (!isObject(newState)) throwError('State must be an object.', newState)
+  },
+
+  validateArguments: function (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep, globalScope) {
+    if (typeof name !== 'string' || !name.length) {
+      throwError('Store name should be a non-empty string.', name)
+    }
+    storePrivateMethods.validateNewState.call(this, initialState)
+    if (typeof logStateToConsole !== 'boolean') {
+      throwError('When indicating whether to log state to console you should pass a boolean value.', logStateToConsole)
+    }
+    if (isNaN(numberOfPreviousStatesToKeep) || numberOfPreviousStatesToKeep < 1) {
+      throwError('When indicating how many previous versions of state to keep you should pass a number > 0.', numberOfPreviousStatesToKeep)
+    }
+    validateGlobalScope(globalScope)
+  },
+
+  doLogStateToConsole: function () {
+    if (this.storeSettings.logStateToConsole) {
+      console.log(logPrefix + this.storeSettings.name + ' | ', new Date(), this.storeState)
+    }
+  },
+
+  addCurrentStateToPreviousStates: function () {
+    this.previousStoreStates.unshift(this.storeState)
+    if (this.previousStoreStates.length > this.storeSettings.numberOfPreviousStatesToKeep) {
+      this.previousStoreStates = this.previousStoreStates.slice(0, this.storeSettings.numberOfPreviousStatesToKeep)
+    }
+  }
+}
+
+/******************************************************************************/
+
 export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope = window) => class extends React.Component {
   constructor (props) {
     super(props)
@@ -153,6 +159,8 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope = 
     return <ChildComponent whitelodge={this.state} {...this.props} />
   }
 }
+
+/******************************************************************************/
 
 export const renderInitialStatesOfStores = (globalScopeName = 'window', globalScope = window) => {
   if (!isString(globalScopeName)) {
