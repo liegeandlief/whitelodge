@@ -92,7 +92,7 @@ export class Store {
   }
 }
 
-export const AddStoreSubscriptions = (ChildComponent, storeNames) => class extends React.Component {
+export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope) => class extends React.Component {
   constructor (props) {
     super(props)
     this.subscribeToStores()
@@ -105,17 +105,17 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames) => class exten
 
     storeNames.forEach(storeName => {
       if (typeof storeName !== 'string') throwError('Each store name passed to AddStoreSubscriptions should be a string.', storeName)
-      if (!root.whitelodge.stores.hasOwnProperty(storeName)) throwError('There is not store called "' + storeName + '".', root.whitelodge)
+      if (!globalScope.whitelodge.stores.hasOwnProperty(storeName)) throwError('There is not store called "' + storeName + '".', globalScope.whitelodge)
       initialState[storeName] = (new Date()).getTime()
-      root.whitelodge.stores[storeName].subscribeToStore(this)
+      globalScope.whitelodge.stores[storeName].subscribeToStore(this)
     })
 
     this.state = initialState
   }
 
   componentWillUnmount () {
-    Object.keys(root.whitelodge.stores).forEach(key => {
-      root.whitelodge.stores[key].unsubscribeFromStore(this)
+    Object.keys(globalScope.whitelodge.stores).forEach(key => {
+      globalScope.whitelodge.stores[key].unsubscribeFromStore(this)
     })
   }
 
@@ -124,9 +124,9 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames) => class exten
   }
 }
 
-export const renderInitialStatesOfStores = (globalScopeName) => {
-  const script = Object.keys(root.whitelodge.stores).reduce((assignments, storeName) => {
-    return assignments + globalScopeName + '.whitelodge.preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(root.whitelodge.stores[storeName].storeState) + ';'
+export const renderInitialStatesOfStores = (globalScope, globalScopeName) => {
+  const script = Object.keys(globalScope.whitelodge.stores).reduce((assignments, storeName) => {
+    return assignments + globalScopeName + '.whitelodge.preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(globalScope.whitelodge.stores[storeName].storeState) + ';'
   }, '<script type="text/javascript">')
   return script + '</script>'
 }
