@@ -124,9 +124,9 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames) => class exten
   }
 }
 
-export const renderInitialStatesOfStores = () => {
+export const renderInitialStatesOfStores = (globalScopeName) => {
   const script = Object.keys(root.whitelodge.stores).reduce((assignments, storeName) => {
-    return assignments + 'window.whitelodge.preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(root.whitelodge.stores[storeName].storeState) + ';'
+    return assignments + globalScopeName + '.whitelodge.preRenderedInitialStates["' + storeName + '"]=' + JSON.stringify(root.whitelodge.stores[storeName].storeState) + ';'
   }, '<script type="text/javascript">')
   return script + '</script>'
 }
