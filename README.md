@@ -9,12 +9,12 @@
 whitelodge does the following and nothing more:
 
 - Allows for the creation of stores (e.g. in a shopping application there might be a store for the inventory). These stores contain the current state (e.g. details of the current inventory items), previous states and methods for mutating the current state (e.g. a method for adding an item which sends the item details to a server and updates the current state with the new item's details).
-- Allows these stores to be made available globally so that all components in a React application can access them. A component can then subscribe to particular stores and whenever the state is updated in one of these subscribed stores then an update will be triggered on the component.
+- Makes these stores available globally so that all components in a React application can access them. A component can then subscribe to particular stores and whenever the state is updated in one of these subscribed stores then an update will be triggered on the component.
 
 ## How do I install whitelodge?
 
 - Your application should have a dependency of React >=16.0.0.
-- Then run `npm install whitelodge`
+- Then run `npm install whitelodge --save`
 
 ## How do I use whitelodge?
 
@@ -24,11 +24,11 @@ Stores are just classes which extend whitelodge's `Store` class. The constructor
 
 - The store's name (required). This should be a string and is the key by which the store will referenced from other parts of the application. All stores in an application should have different names.
 - The store's initial state (optional, defaults to `{}`). This should be an object. Preparation of the initial state should be completed before a store is initialised i.e. if preparation of the initial state relies on asynchronous data fetching then this data fetching should be completed prior to initialising the store - this applies both on the client and the server.
-- Where to store this store (optional, defaults to `window`). This should be an object which is available to all components subscribing to the store. **Important - all stores in an application should be stored in the same place.**
+- Where to keep this store (optional, defaults to `window`). This should be an object which is available to all components subscribing to the store. **Important - all stores in an application should be kept in the same place.**
 - Whether or not to log changes to this store's state to the console (optional, defaults to `false`). This should be a boolean.
 - The number of previous states to keep in the store's `previousStoreStates` property (optional, defaults to 1). This should be an integer greater than zero.
 
-The store should then contain methods for mutating its state. Mutation methods should update the store's state by calling `this.setStoreState` and passing it the new state object. This new state object is copied into the existing state using seamless-immutable's `Immutable.merge` function. Once the store's state has been updated then its most recent previous state is available under the store's `previousStoreStates` property as the first object in the array.
+The store should then contain methods for mutating its state. Mutation methods should update the store's state by calling `this.setStoreState` and passing it the new state object. This new state object is copied into the existing state using seamless-immutable's `merge` function. Once the store's state has been updated then its most recent previous state is available under the store's `previousStoreStates` property as the first object in the array.
 
 The store can also contain methods which do not mutate the state but do something with its current value and return the result of this operation (see the `sumAllItemsTotalQuantities` method in the class below).
 
@@ -75,7 +75,7 @@ export default class Inventory extends Store {
 }
 ```
 
-A store's state object is immutable and so cannot be directly changed. Store state should only be changed using the `this.setStoreState` method because this will cause subscribed components to update. A store's state property should never have its value reassigned.
+A store's state object is immutable and so cannot be directly changed. Store state should only be changed using the `this.setStoreState` method because this will cause subscribed components to update and will also update the store's `previousStoreStates` array. A store's `state` and `previousStoreStates` properties should never have their values reassigned.
 
 whitelodge's `Store` class defines the following properties/methods so avoid defining properties or methods with the following names on classes which extend `Store`:
 
@@ -117,15 +117,15 @@ class InventoryList extends React.Component {
 
 // Parameter 1: component to subscribe.
 // Parameter 2: array of store names to subscribe to.
-// Parameter 3: object in which all stores are stored. If stores are stored in the window object then this parameter is not needed as it defaults to window.
+// Parameter 3: object in which all stores are kept. If stores are kept in the window object then this parameter is not needed as it defaults to window.
 export default AddStoreSubscriptions(InventoryList, ['inventory', 'anotherStore'], global)
 ```
 
-This component will be able to access these stores from the object in which they are stored (as configured when initialising the stores) like `global.whitelodge.stores.inventory` and `global.whitelodge.stores.anotherStore`. State can be read from the `storeState` property e.g. `global.whitelodge.stores.inventory.storeState`.
+This component will be able to access these stores from the object in which they are kept like `global.whitelodge.stores.inventory` and `global.whitelodge.stores.anotherStore`. State can be read from the `storeState` property e.g. `global.whitelodge.stores.inventory.storeState`.
 
 The most recent previous state of a store can be read from the first item in the `previousStoreStates` array e.g. `global.whitelodge.stores.inventory.previousStoreStates[0]`. This can be used to compare the current and previous states of the store in the component's lifecycle methods. Older versions of the state are also available in the array depending on how many previous states the store is configured to keep.
 
-Given a component where what is rendered is only a function of the component's props and state, if this component subscribes to a whitelodge store then what is rendered becomes a function of its props, state and the store's state.
+Given a component where what gets rendered is only a function of the component's props and state, if this component subscribes to a whitelodge store then what gets rendered becomes a function of its props, state and the store's state.
 
 Store methods can be called from each store object too e.g. `global.whitelodge.stores.inventory.addItem('Damn fine coffee', 2)`.
 
@@ -155,8 +155,8 @@ const generateHTML = () => {
     </head>
     <body>
       {/*
-        Parameter 1: the name of the object in which all stores are stored. If stores are stored in the window object then this parameter is not needed as it defaults to 'window'.
-        Parameter 2: the object in which all stores are stored. If stores are stored in the window object then this parameter is not needed as it defaults to window.
+        Parameter 1: the name of the object in which all stores are kept. If stores are kept in the window object then this parameter is not needed as it defaults to 'window'.
+        Parameter 2: the object in which all stores are kept. If stores are kept in the window object then this parameter is not needed as it defaults to window.
       */}
       ${renderInitialStatesOfStores('global', global)}
       <div id="app">${renderToString(<TopLevelAppComponent />)}</div>
