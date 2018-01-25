@@ -3,7 +3,6 @@
 import isObject from 'isobject'
 import isFunction from 'is-function'
 import React from 'react'
-import root from 'window-or-global'
 import Immutable from 'seamless-immutable'
 
 const logPrefix = 'whitelodge | '
@@ -14,9 +13,9 @@ const throwError = (message, varToDump = 'varToDumpNotReceived') => {
 }
 
 const storePrivateMethods = {
-  makeGloballyAvailable: function () {
-    if (!isObject(root.whitelodge)) root.whitelodge = {stores: {}}
-    root.whitelodge.stores[this.storeSettings.name] = this
+  makeGloballyAvailable: function (globalScope) {
+    if (!isObject(globalScope.whitelodge)) globalScope.whitelodge = {stores: {}}
+    globalScope.whitelodge.stores[this.storeSettings.name] = this
   },
 
   validateNewState: function (newState) {
@@ -62,7 +61,7 @@ export class Store {
     } else {
       this.setStoreState(initialState)
     }
-    storePrivateMethods.makeGloballyAvailable.call(this)
+    storePrivateMethods.makeGloballyAvailable.call(this, globalScope)
   }
 
   setStoreState (newState) {
