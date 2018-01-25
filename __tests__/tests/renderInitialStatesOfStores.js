@@ -13,6 +13,10 @@ global.console.warn = jest.fn()
 describe('Test rendering the initial state of a store.', () => {
   test('It renders the correct initial state.', () => {
     new TestStore()
+
+    expect(() => { renderInitialStatesOfStores({notAString: true}, window) }).toThrow()
+    expect(() => { renderInitialStatesOfStores('window', 'notAnObject') }).toThrow()
+
     expect(renderInitialStatesOfStores()).toEqual(
       '<script type="text/javascript">window.whitelodge.preRenderedInitialStates["testStore"]={"counter":0};</script>'
     )
