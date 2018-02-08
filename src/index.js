@@ -8,7 +8,7 @@ import {merge} from 'seamless-immutable'
 
 /******************************************************************************/
 
-const logPrefix = 'whitelodge | '
+const logPrefix = 'whitelodge - '
 
 const throwError = (message, varToDump = '§varToDumpNotReceived§') => {
   if (varToDump !== '§varToDumpNotReceived§') console.error(varToDump)
@@ -19,13 +19,20 @@ const validateGlobalScope = globalScope => {
   if (!isObject(globalScope)) throwError('Global scope must be an object.', globalScope)
 }
 
+const validateNamespace = namespace => {
+  if (!isString(namespace) || !(/^[a-zA-Z]+$/.test(namespace))) {
+    throwError('namespace must be an alphabetic string.', namespace)
+  }
+}
+
 /******************************************************************************/
 
 export class Store {
-  constructor (name, initialState = {}, globalScope = window, logStateToConsole = false, numberOfPreviousStatesToKeep = 1) {
+  constructor (name, initialState = {}, globalScope = window, logStateToConsole = false, numberOfPreviousStatesToKeep = 1, namespace = 'whitelodge') {
     const parsedNumberOfPreviousStatesToKeep = Number(numberOfPreviousStatesToKeep)
-    storePrivateMethods.validateArguments.call(this, name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep, globalScope)
+    storePrivateMethods.validateArguments.call(this, name, initialState, logStateToConsole, parsedNumberOfPreviousStatesToKeep, globalScope, namespace)
 
+    this.storeNamespace = namespace
     this.storeSettings = {
       name,
       logStateToConsole,
@@ -37,12 +44,11 @@ export class Store {
 
     if (
       typeof globalScope !== 'undefined' &&
-      typeof globalScope.whitelodge !== 'undefined' &&
-      typeof globalScope.whitelodge.preRenderedInitialStates !== 'undefined' &&
-      typeof globalScope.whitelodge.preRenderedInitialStates[this.storeSettings.name] !== 'undefined'
+      typeof globalScope[this.storeNamespace + '_preRenderedInitialStates'] !== 'undefined' &&
+      typeof globalScope[this.storeNamespace + '_preRenderedInitialStates'][this.storeSettings.name] !== 'undefined'
     ) {
-      this.setStoreState(globalScope.whitelodge.preRenderedInitialStates[this.storeSettings.name])
-      delete globalScope.whitelodge.preRenderedInitialStates[this.storeSettings.name]
+      this.setStoreState(globalScope[this.storeNamespace + '_preRenderedInitialStates'][this.storeSettings.name])
+      delete globalScope[this.storeNamespace + '_preRenderedInitialStates'][this.storeSettings.name]
     } else {
       this.setStoreState(initialState)
     }
@@ -83,15 +89,15 @@ export class Store {
 
 const storePrivateMethods = {
   makeGloballyAvailable: function (globalScope) {
-    if (!isObject(globalScope.whitelodge)) globalScope.whitelodge = {stores: {}}
-    globalScope.whitelodge.stores[this.storeSettings.name] = this
+    if (!isObject(globalScope[this.storeNamespace])) globalScope[this.storeNamespace] = {stores: {}}
+    globalScope[this.storeNamespace].stores[this.storeSettings.name] = this
   },
 
   validateNewState: function (newState) {
     if (!isObject(newState)) throwError('State must be an object.', newState)
   },
 
-  validateArguments: function (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep, globalScope) {
+  validateArguments: function (name, initialState, logStateToConsole, numberOfPreviousStatesToKeep, globalScope, namespace) {
     if (typeof name !== 'string' || !name.length) {
       throwError('Store name should be a non-empty string.', name)
     }
@@ -103,11 +109,12 @@ const storePrivateMethods = {
       throwError('When indicating how many previous versions of state to keep you should pass a number > 0.', numberOfPreviousStatesToKeep)
     }
     validateGlobalScope(globalScope)
+    validateNamespace(namespace)
   },
 
   doLogStateToConsole: function () {
     if (this.storeSettings.logStateToConsole) {
-      console.log(logPrefix + this.storeSettings.name + ' | ', new Date(), this.storeState)
+      console.log(logPrefix + this.storeSettings.name + ' - ', new Date(), this.storeState)
     }
   },
 
@@ -121,7 +128,7 @@ const storePrivateMethods = {
 
 /******************************************************************************/
 
-export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope = window) => class extends React.Component {
+export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope = window, namespace = 'whitelodge') => class extends React.Component {
   constructor (props) {
     super(props)
     this.subscribeToStores()
@@ -132,6 +139,7 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope = 
       throwError('The second argument passed to AddStoreSubscriptions should be an array of store names to which you want to subscribe.', storeNames)
     }
     validateGlobalScope(globalScope)
+    validateNamespace(namespace)
 
     const initialState = {}
 
@@ -139,40 +147,43 @@ export const AddStoreSubscriptions = (ChildComponent, storeNames, globalScope = 
       if (typeof storeName !== 'string') {
         throwError('Each store name passed to AddStoreSubscriptions should be a string.', storeName)
       }
-      if (!globalScope.whitelodge.stores.hasOwnProperty(storeName)) {
-        throwError('There is not store called "' + storeName + '".', globalScope.whitelodge)
+      if (!globalScope[namespace].stores.hasOwnProperty(storeName)) {
+        throwError('There is not store called "' + storeName + '".', globalScope[namespace])
       }
       initialState[storeName] = (new Date()).getTime()
-      globalScope.whitelodge.stores[storeName].subscribeToStore(this)
+      globalScope[namespace].stores[storeName].subscribeToStore(this)
     })
 
     this.state = initialState
   }
 
   componentWillUnmount () {
-    Object.keys(globalScope.whitelodge.stores).forEach(key => {
-      globalScope.whitelodge.stores[key].unsubscribeFromStore(this)
+    Object.keys(globalScope[namespace].stores).forEach(key => {
+      globalScope[namespace].stores[key].unsubscribeFromStore(this)
     })
   }
 
   render () {
-    return <ChildComponent whitelodge={this.state} {...this.props} />
+    const whitelodge = {
+      ['whitelodge_' + namespace]: this.state
+    }
+    return <ChildComponent {...whitelodge} {...this.props} />
   }
 }
 
 /******************************************************************************/
 
-export const renderInitialStatesOfStores = (globalScopeName = 'window', globalScope = window) => {
-  if (!isString(globalScopeName)) {
-    throwError('globalScopeName must be a valid variable name as a string.', globalScopeName)
+export const renderInitialStatesOfStores = (globalScopeName = 'window', globalScope = window, namespace = 'whitelodge') => {
+  if (!isString(globalScopeName) || !(/^[a-zA-Z]+$/.test(globalScopeName))) {
+    throwError('globalScopeName must be an alphabetic string.', globalScopeName)
   }
   validateGlobalScope(globalScope)
-  const script = Object.keys(globalScope.whitelodge.stores).reduce((assignments, storeName) => {
+  validateNamespace(namespace)
+  const script = Object.keys(globalScope[namespace].stores).reduce((assignments, storeName) => {
     return (
       assignments +
-      globalScopeName +
-      '.whitelodge.preRenderedInitialStates["' + storeName + '"]=' +
-      JSON.stringify(globalScope.whitelodge.stores[storeName].storeState) +
+      globalScopeName + '["' + namespace + '_preRenderedInitialStates"]["' + storeName + '"]=' +
+      JSON.stringify(globalScope[namespace].stores[storeName].storeState) +
       ';'
     )
   }, '<script type="text/javascript">')
