@@ -48,17 +48,30 @@ test('Has the expected properties when all arguments are passed.', () => {
   expect(testStore.storeSettings).toHaveProperty('numberOfPreviousStatesToKeep', 5)
 })
 
-test('Has the expected properties when all arguments are passed and pre-rendered state is available.', () => {
-  window.whitelodge.preRenderedInitialStates = {testStore: {b: 2}}
-  const testStore = new Store('testStore', {a: 1}, window, true, 5)
+test('Has the expected properties when pre-rendered state is available.', () => {
+  window.whitelodge_preRenderedInitialStates = {testStore: {a: 1}}
+  const testStore = new Store('testStore')
   expect(testStore).toHaveProperty('storeSettings')
-  expect(testStore).toHaveProperty('storeState', {b: 2})
+  expect(testStore).toHaveProperty('storeState', {a: 1})
   expect(testStore).toHaveProperty('previousStoreStates', [{}])
   expect(testStore).toHaveProperty('storeSubscribers', [])
   expect(testStore.storeSettings).toHaveProperty('name', 'testStore')
-  expect(testStore.storeSettings).toHaveProperty('logStateToConsole', true)
-  expect(testStore.storeSettings).toHaveProperty('numberOfPreviousStatesToKeep', 5)
-  delete window.whitelodge.preRenderedInitialStates
+  expect(testStore.storeSettings).toHaveProperty('logStateToConsole', false)
+  expect(testStore.storeSettings).toHaveProperty('numberOfPreviousStatesToKeep', 1)
+  delete window.whitelodge_preRenderedInitialStates
+})
+
+test('Has the expected properties when all arguments are passed and pre-rendered state is available.', () => {
+  window.testNamespace_preRenderedInitialStates = {namespacedTestStore: {c: 3}}
+  const namespacedTestStore = new Store('namespacedTestStore', {b: 2}, window, true, 5, 'testNamespace')
+  expect(namespacedTestStore).toHaveProperty('storeSettings')
+  expect(namespacedTestStore).toHaveProperty('storeState', {c: 3})
+  expect(namespacedTestStore).toHaveProperty('previousStoreStates', [{}])
+  expect(namespacedTestStore).toHaveProperty('storeSubscribers', [])
+  expect(namespacedTestStore.storeSettings).toHaveProperty('name', 'namespacedTestStore')
+  expect(namespacedTestStore.storeSettings).toHaveProperty('logStateToConsole', true)
+  expect(namespacedTestStore.storeSettings).toHaveProperty('numberOfPreviousStatesToKeep', 5)
+  delete window.testNamespace_preRenderedInitialStates
 })
 
 test('Throws errors when passed invalid arguments.', () => {
@@ -67,11 +80,19 @@ test('Throws errors when passed invalid arguments.', () => {
   expect(() => { new Store('testStore', {}, window, 'notABoolean') }).toThrow()
   expect(() => { new Store('testStore', {}, window, true, 0) }).toThrow()
   expect(() => { new Store('testStore', {}, window, true, 'notANumber') }).toThrow()
+  expect(() => { new Store('testStore', {}, window, true, 1, ['notAString']) }).toThrow()
+  expect(() => { new Store('testStore', {}, window, true, 1, '') }).toThrow()
+  expect(() => { new Store('testStore', {}, window, true, 1, 'Not just letters!!!1') }).toThrow()
 })
 
 test('Is available globally.', () => {
   const testStore = new Store('testStore')
   expect(global.whitelodge.stores.testStore).toEqual(testStore)
+})
+
+test('Namespaced store is available globally.', () => {
+  const namespacedTestStore = new Store('namespacedTestStore', {}, window, false, 1, 'testNamespace')
+  expect(global.testNamespace.stores.namespacedTestStore).toEqual(namespacedTestStore)
 })
 
 describe('Test toggling logging of state to console.', () => {
@@ -93,7 +114,7 @@ describe('Test toggling logging of state to console.', () => {
     expect(consoleLogMessages).toHaveLength(1)
     expect(consoleLogDates).toHaveLength(1)
     expect(consoleLogStates).toHaveLength(1)
-    expect(consoleLogMessages[0]).toEqual('whitelodge | testStore | ')
+    expect(consoleLogMessages[0]).toEqual('whitelodge - testStore - ')
     expect(consoleLogDates[0]).toBeInstanceOf(Date)
     expect(consoleLogStates[0]).toEqual({a: 1})
   })
