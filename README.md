@@ -120,7 +120,7 @@ class InventoryList extends React.Component {
 // Parameter 1: component to subscribe.
 // Parameter 2: array of store names to subscribe to.
 // Parameter 3: object in which the specified stores are kept. If stores are kept in the window object then this parameter is not needed as it defaults to window.
-// Paramter 4: the namespace within the object in which the specified stores are kept. If stores are not namespaced then this parameter is not needed as it defaults to 'whitelodge'.
+// Parameter 4: the namespace within the object in which the specified stores are kept. If stores are not namespaced then this parameter is not needed as it defaults to 'whitelodge'.
 export default AddStoreSubscriptions(InventoryList, ['inventory', 'anotherStore'], global, 'sharedState')
 ```
 
@@ -160,7 +160,7 @@ const generateHTML = () => {
       {/*
         Parameter 1: the name of the object in which stores are kept. If stores are kept in the window object then this parameter is not needed as it defaults to 'window'.
         Parameter 2: the object in which stores are kept. If stores are kept in the window object then this parameter is not needed as it defaults to window.
-        Paramter 3: the namespace within the object in which stores are kept. If stores are not namespaced then this parameter is not needed as it defaults to 'whitelodge'.
+        Parameter 3: the namespace within the object in which stores are kept. If stores are not namespaced then this parameter is not needed as it defaults to 'whitelodge'.
       */}
       ${renderInitialStatesOfStores('global', global, 'sharedState')}
       <div id="app">${renderToString(<TopLevelAppComponent />)}</div>
